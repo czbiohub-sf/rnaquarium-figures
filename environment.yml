@@ -1,0 +1,7 @@
+name: rnaquarium-figs
+channels:
+- conda-forge
+dependencies:
+- jupyterlab=4.2.1
+- python=3.12
+
