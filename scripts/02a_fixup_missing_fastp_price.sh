@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # 02a_fixup_missing_fastp_price.sh
 # fixup:
@@ -8,4 +8,6 @@
 # cat data/intermediate/stats_merged_seqtype.csv | scripts/02a_fixup_missing_fastp_price.sh > data/intermediate/stats_merged_seqtype_fixup.csv
 
 
-sed "s/^\([^,]*,[^,]*,[^,]*,[^,]*,[^,]*,\)\([^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*\),,,,,,$/\1,,,,,,\2/g" -
+PRE_FASTP=$(printf '[^,]*,%.0s' {1..5})
+REST="$(printf '[^,]*,%.0s' {1..25})[^,]*"
+sed "s/^\(${PRE_FASTP}\)\(${REST}\),,,,,,$/\1,,,,,,\2/g" -
