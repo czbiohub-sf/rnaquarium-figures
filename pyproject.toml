@@ -1,0 +1,38 @@
+[tool.ruff]
+exclude = ["scripts/old", ".*"]
+extend-include = ["*.ipynb"]
+line-length = 95
+show-fixes = true
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+	   "I", # isort
+	   "C", # conventions
+	   "R", # refactors
+	   "W", # warnings
+	   "E", # pycodestyle
+	   "F", # pyflakes
+	   "B", # bugbear
+	   "UP", # pyupgrade
+	   "ANN", # flake8-annotations
+	   "PTH", # flake8-use-pathlib
+	   ]
+ignore = [
+	   "F821",
+	   "F811",
+	   "E402",
+	   "E701",
+	   "RET504" # redundant assign before return - sometimes clearer
+]
+task-tags = ["TODO", "FIXME", "???"]
+
+[tool.ruff.lint.isort]
+default-section = "third-party"
+known-local-folder = [
+	   "hyperparameters",
+	   "model",
+	   "sweep",
+	   "split",
+	   "virusdata",
+]
