@@ -1,7 +1,9 @@
-name: rnaquarium-figs
+name: rnaquarium-figs-dev
 channels:
+- anaconda
 - conda-forge
 dependencies:
 - jupyterlab=4.2.1
+- pandas=2.1.1
 - python=3.12
 
