@@ -7,7 +7,8 @@ pyproject.toml
 environment-dev.yml
 scripts
 tests
-scratch'
+scratch
+intermediate'
 
 # construct directory ignore parameter list from .gitignore entries
 GITIGNORE=$(grep -vE '^(#.*|\s*)$' .gitignore | sed 's/\(.*\)/-I \1/g' | paste -s -d" ")
