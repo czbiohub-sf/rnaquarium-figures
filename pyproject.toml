@@ -30,9 +30,4 @@ task-tags = ["TODO", "FIXME", "???"]
 [tool.ruff.lint.isort]
 default-section = "third-party"
 known-local-folder = [
-	   "hyperparameters",
-	   "model",
-	   "sweep",
-	   "split",
-	   "virusdata",
 ]
