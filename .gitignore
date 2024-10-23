@@ -2,6 +2,12 @@
 data
 data-backup
 
+# resource folders
+bin
+
+Fig1/tests
+Fig1/scratch
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
