@@ -1,13 +1,16 @@
 name: rnaquarium-figs-dev
 channels:
-- anaconda
 - conda-forge
+- bioconda
+- anaconda
 dependencies:
 - jupyterlab=4.2.1
 - matplotlib=3.8.4
-- pandas
-- plotly=5.24.1
+- conda-forge::pandas=2.2.1
+- conda-forge::polars
+- bioconda::entrez-direct
 - python=3.12
+- plotly=5.24.1
 - ruff
 - shellcheck
 
