@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel B.5: Pipeline CPU resource usage
+Supplemental: Pipeline CPU resource usage
 
 Horizontal bar chart of total CPU-hours per pipeline step (completed + failed).
 Steps ordered top-to-bottom by pipeline execution order.
+
+The main Figure 1 summarises CPU counts inline on the pipeline diagram (Panel
+A); this script retains the standalone bar-chart treatment for supplemental
+material. Run from the Fig1/ root.
 """
 
 import polars as pl
@@ -17,8 +21,8 @@ from pathlib import Path
 # =============================================================================
 
 TRACE_FILE = Path("data/75k_unstable/trace-merged-dangerously.txt")
-OUTPUT_DIR = Path("figures")
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = Path("figures/supplemental")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 CM = 1 / 2.54
 FIG_SIZE = (6.178 * CM, 6.225 * CM)
@@ -181,5 +185,5 @@ def plot_cpu_chart(output_path, mode):
     plt.close()
 
 
-plot_cpu_chart(OUTPUT_DIR / "Fig1_B_5_resource_usage_total.svg",     mode='total')
-plot_cpu_chart(OUTPUT_DIR / "Fig1_B_5_resource_usage_breakdown.svg", mode='breakdown')
+plot_cpu_chart(OUTPUT_DIR / "Fig1_resource_usage_total.svg",     mode='total')
+plot_cpu_chart(OUTPUT_DIR / "Fig1_resource_usage_breakdown.svg", mode='breakdown')

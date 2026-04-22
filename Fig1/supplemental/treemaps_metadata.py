@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel C.2: Metadata summary treemaps
+Supplemental: Metadata summary treemaps
 
-Creates treemaps showing:
-1. Developmental stage distribution (6 categories)
-2. Tissue type distribution (21 categories)
+Treemaps of developmental-stage and tissue-category distributions.
+Previously Panel C of Figure 1; moved to supplemental when the 2026-04 layout
+replaced Panel C with the pipeline-outcome tables.
+
+Run from the Fig1/ root.
 """
 
 import textwrap
@@ -22,8 +24,8 @@ from pathlib import Path
 
 METADATA_FILE = Path("/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv")
 BATLOW_PALETTE = Path("palette/batlow/DiscretePalettes/batlow100.txt")
-OUTPUT_DIR = Path("figures")
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = Path("figures/supplemental")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 CM = 1 / 2.54
 PANEL_W = 6.25 * CM    # panel C2: 6.25 × 5 cm
@@ -195,13 +197,13 @@ def create_treemap(data_df, category_col, output_path, title, figsize=(PANEL_W, 
 create_treemap(
     devstage_counts,
     "devstage_curation_coarse",
-    OUTPUT_DIR / "Fig1_C_2_devstage_distribution.svg",
+    OUTPUT_DIR / "Fig1_treemap_devstage.svg",
     None,
 )
 create_treemap(
     devstage_counts,
     "devstage_curation_coarse",
-    OUTPUT_DIR / "Fig1_C_2_devstage_distribution_legend.svg",
+    OUTPUT_DIR / "Fig1_treemap_devstage_legend.svg",
     "Developmental Stage Distribution",
     legend=True,
 )
@@ -209,13 +211,13 @@ create_treemap(
 create_treemap(
     tissue_counts,
     "tissue_curation_coarse",
-    OUTPUT_DIR / "Fig1_C_2_tissue_distribution.svg",
+    OUTPUT_DIR / "Fig1_treemap_tissue.svg",
     None,
 )
 create_treemap(
     tissue_counts,
     "tissue_curation_coarse",
-    OUTPUT_DIR / "Fig1_C_2_tissue_distribution_legend.svg",
+    OUTPUT_DIR / "Fig1_treemap_tissue_legend.svg",
     "Tissue Type Distribution",
     legend=True,
 )

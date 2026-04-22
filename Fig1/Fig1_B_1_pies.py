@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel B.2: Sequencing technologies pie charts
+Figure 1 Panel B.1: Technology and Seq-Detective outcome pies
 
-Creates multi-level polar bar plots (pie charts) showing:
-1. Technology categories (inner ring)
-2. Seq-detective filtering outcomes (outer ring)
+Two polar bar plots for Panel B, drawn at different physical sizes:
+  1. `Fig1_B_1_tech_pie.svg` — simple technology-category pie covering all
+     accessions (including "Other"); no outer ring.
+  2. `Fig1_B_1_seqdetective_pie.svg` — multi-level pie on the named-tech
+     subset. Inner ring is the same technology category; outer ring is the
+     Seq-Detective per-accession outcome (BB / TB / BT / TT / B / T).
+
+Both charts share the technology-color mapping (computed once from the full
+batlow palette across all tech categories, count-sorted). Outcome-ring colors
+stay in sync with `Fig1_B_2_seqdetective_scatter.py`.
 """
 
 import polars as pl
@@ -169,14 +176,14 @@ _all_tech = tech_counts.to_pandas()
 _batlow_all = load_batlow_colors(len(_all_tech))
 TECH_COLOR_MAP = dict(zip(_all_tech['tech_category'], _batlow_all))
 
-# Outcome colors: aligned with Fig1_B_3 seq-detective palette.
+# Outcome colors: aligned with Fig1_B_2 seq-detective palette.
 #   BB / TB / BT / TT mirror the B-B / T-B / B-T / T-T colors exactly.
 #   B  / T  are single-end equivalents: close to BB/TT but visually distinct.
 OUTCOME_COLORS = {
-    'BB': '#99882c',  # both biological   — olive        (= B-B in Fig1_B_3)
-    'TB': '#426f52',  # M1 tech, M2 bio  — forest green  (= T-B in Fig1_B_3)
-    'BT': '#0b2c5c',  # M1 bio, M2 tech  — dark navy     (= B-T in Fig1_B_3)
-    'TT': '#f29d6c',  # both technical   — coral/peach   (= T-T in Fig1_B_3)
+    'BB': '#99882c',  # both biological   — olive        (= B-B in Fig1_B_2)
+    'TB': '#426f52',  # M1 tech, M2 bio  — forest green  (= T-B in Fig1_B_2)
+    'BT': '#0b2c5c',  # M1 bio, M2 tech  — dark navy     (= B-T in Fig1_B_2)
+    'TT': '#f29d6c',  # both technical   — coral/peach   (= T-T in Fig1_B_2)
     'B':  '#c4b030',  # SE biological    — lighter olive (close to BB, distinguishable)
     'T':  '#d4603c',  # SE technical     — darker coral  (close to TT, distinguishable)
 }
@@ -346,24 +353,25 @@ def create_multilevel_pie(df, output_path, draw_outcomes=True, exclude_categorie
     print(f"\nSaved plot to {output_path}")
     plt.close()
 
-# Multilevel ring: exclude "Other" to focus detail on named technologies
-# 10x label pushed out to avoid overlapping CEL-Seq
+# Panel B.1a — simple tech pie: all categories (including "Other"); no outer ring.
+# DeTCT label pushed out to avoid overlapping 10x.
 create_multilevel_pie(
     merged,
-    OUTPUT_DIR / "Fig1_B_2_technology_outcomes_multilevel.svg",
-    draw_outcomes=True,
-    exclude_categories=['Other'],
-    label_r_overrides={'10x': 0.85},
-)
-
-# Simple pie: all categories (including Other); no outcome ring
-# DeTCT label pushed out to avoid overlapping 10x
-create_multilevel_pie(
-    merged,
-    OUTPUT_DIR / "Fig1_B_2_technology_categories_simple.svg",
+    OUTPUT_DIR / "Fig1_B_1_tech_pie.svg",
     draw_outcomes=False,
     exclude_categories=None,
     label_r_overrides={'DeTCT': 0.85},
+)
+
+# Panel B.1b — multilevel tech × outcome: "Other" dropped so non-bulk techs
+# get detail; outer ring is Seq-Detective per-accession outcome.
+# 10x label pushed out to avoid overlapping CEL-Seq.
+create_multilevel_pie(
+    merged,
+    OUTPUT_DIR / "Fig1_B_1_seqdetective_pie.svg",
+    draw_outcomes=True,
+    exclude_categories=['Other'],
+    label_r_overrides={'10x': 0.85},
 )
 
 print("\nDone!")

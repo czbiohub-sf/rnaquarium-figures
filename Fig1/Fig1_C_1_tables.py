@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel B.1: Pipeline filtering statistics table
+Figure 1 Panel C.1: Pipeline processing outcome tables
 
-Creates table showing run and read counts at each pipeline stage.
-Breaks down by sequencing technology group (SE, PE, T-filt).
+Three tables summarizing RNAquarium run and read counts at each pipeline stage,
+plus the metatranscriptome contig breakdown. Written to HTML via great_tables;
+screenshot/embed for layout.
+
+Breaks down by Seq-Detective technology group (SE, PE, T-filt).
 """
 
 import polars as pl
@@ -199,8 +202,8 @@ full_table = (
 )
 
 html_content = full_table.as_raw_html()
-(OUTPUT_DIR / "Fig1_B_1_filtering_stats_full.html").write_text(html_content)
-print(f"\nSaved full table to {OUTPUT_DIR / 'Fig1_B_1_filtering_stats_full.html'}")
+(OUTPUT_DIR / "Fig1_C_1_run_read_filtering.html").write_text(html_content)
+print(f"\nSaved full table to {OUTPUT_DIR / 'Fig1_C_1_run_read_filtering.html'}")
 
 # Simplified totals table
 totals_table = (
@@ -224,8 +227,8 @@ totals_table = (
 )
 
 html_content = totals_table.as_raw_html()
-(OUTPUT_DIR / "Fig1_B_1_filtering_stats_totals.html").write_text(html_content)
-print(f"Saved totals table to {OUTPUT_DIR / 'Fig1_B_1_filtering_stats_totals.html'}")
+(OUTPUT_DIR / "Fig1_C_1_run_read_totals.html").write_text(html_content)
+print(f"Saved totals table to {OUTPUT_DIR / 'Fig1_C_1_run_read_totals.html'}")
 
 # =============================================================================
 # Optional: Create contig breakdown table (Part II metrics)
@@ -272,7 +275,7 @@ contigs_table = (
 )
 
 html_content = contigs_table.as_raw_html()
-(OUTPUT_DIR / "Fig1_B_1_contigs_breakdown.html").write_text(html_content)
-print(f"Saved contigs table to {OUTPUT_DIR / 'Fig1_B_1_contigs_breakdown.html'}")
+(OUTPUT_DIR / "Fig1_C_1_contigs_breakdown.html").write_text(html_content)
+print(f"Saved contigs table to {OUTPUT_DIR / 'Fig1_C_1_contigs_breakdown.html'}")
 
 print("\nDone!")

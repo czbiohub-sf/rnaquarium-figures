@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel B.3: Read/mate distributions (mapping) - Seq-Detective filtering view
+Figure 1 Panel B.2: Seq-Detective mate1 vs mate2 mapping-rate scatter
 
-Creates hexbin plots of mapped reads (mate1 vs mate2) colored by seq-detective's
-per-mate filtering decision. Shows why seq-detective is needed before RNA-seq processing.
+Scatter/hexbin of paired-end mapped reads (mate1 vs mate2), colored by
+Seq-Detective's per-mate classification. The main panel uses the scatter;
+the density grid and technical-reason breakdown are supplemental.
 
-Categories: B-B, B-T, T-B, T-T (where B=Biological, T=Technical)
+Categories: B-B, B-T, T-B, T-T (B=Biological, T=Technical).
 """
 
 import polars as pl
@@ -20,7 +21,7 @@ from pathlib import Path
 SEQDETECTIVE_METRICS = Path("data/75k_unstable/seqdetective_metrics.parquet")
 SEQDETECTIVE_JUDGEMENT = Path("data/75k_unstable/seq-detective-judgement-summary-augmented.txt")
 OUTPUT_DIR = Path("figures")
-OUTPUT_DIR.mkdir(exist_ok=True)
+(OUTPUT_DIR / "supplemental").mkdir(parents=True, exist_ok=True)
 
 # Custom categorical colors
 BATLOW_COLORS = {
@@ -192,7 +193,7 @@ def create_category_scatter_plot(data: pl.DataFrame, output_path: Path):
     print(f"\nSaved category scatter plot to {output_path}")
     plt.close()
 
-create_category_scatter_plot(pe_df, OUTPUT_DIR / "Fig1_B_3_mapping_seqdetective_categories.svg")
+create_category_scatter_plot(pe_df, OUTPUT_DIR / "Fig1_B_2_seqdetective_scatter.svg")
 
 # =============================================================================
 # Create hexbin density plots for each category (2x2 grid)
@@ -272,7 +273,7 @@ def create_category_hexbin_grid(data: pl.DataFrame, output_path: Path):
     print(f"Saved category hexbin grid to {output_path}")
     plt.close()
 
-create_category_hexbin_grid(pe_df, OUTPUT_DIR / "Fig1_B_3_mapping_seqdetective_density_grid.svg")
+create_category_hexbin_grid(pe_df, OUTPUT_DIR / "supplemental" / "Fig1_seqdetective_density_grid.svg")
 
 # =============================================================================
 # Create reason breakdown for technical classifications (supplemental)
@@ -365,6 +366,6 @@ def create_technical_reason_breakdown(data: pl.DataFrame, output_path: Path):
     print(f"Saved technical reason breakdown to {output_path}")
     plt.close()
 
-create_technical_reason_breakdown(pe_df, OUTPUT_DIR / "Fig1_B_3_mapping_seqdetective_technical_reasons.svg")
+create_technical_reason_breakdown(pe_df, OUTPUT_DIR / "supplemental" / "Fig1_seqdetective_technical_reasons.svg")
 
 print("\nDone!")

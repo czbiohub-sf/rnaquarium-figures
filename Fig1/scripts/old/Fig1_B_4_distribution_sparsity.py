@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel B.4: Read/mate distributions (sparsity)
+ABANDONED (archived for reference): sparsity vs mapping-ratio scatter
 
-Creates scatter plots of gene sparsity (min sparsity vs mate1/mate2 mapping ratio).
-Shows distributions colored by seq-detective category and by technology.
+Original Panel B.4 candidate, marked NOT USING in design.md — the sparsity
+view did not yield a compelling narrative next to the Seq-Detective
+classification scatter. Kept here only so the plotting recipe (including the
+min-sparsity computation across mates and the technology-colored variant)
+stays on record.
 """
 
 import polars as pl

@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel B.3: Read/mate distributions (mapping)
+ABANDONED (archived for reference): mate1 vs mate2 mapping distribution, clustered by bioproject
 
-Creates hexbin/contour plots of mapped reads (mate1 vs mate2) from seq-detective metrics.
-Clusters by bioproject distributions, draws all ~77k samples with log scale density.
+Original Panel B.3 approach: hexbin/contour plots of mapped reads (mate1 vs
+mate2) with hierarchical Wasserstein-distance clustering of bioprojects.
+Superseded by the Seq-Detective per-mate classification view
+(Fig1_B_2_seqdetective_scatter.py at the Fig1/ root), which is easier to
+interpret and aligns with the main narrative. Kept here for provenance only.
+
+Paths below assume you copy this back to Fig1/ root if you want to run it.
 """
 
 import polars as pl

@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 """
-Figure 1 Panel C: Transcriptome clustering UMAPs
+Figure 1 teaser strip: tiny UMAP thumbnail
 
-Creates UMAP plots of the 75k zebrafish transcriptome (61k samples with
-expression data), colored by:
-  1. devstage_curation (6 categories: Embryo, Larval, Juvenile, Adult,
-     Multi-stage, Undetermined)
-  2. tissue_curation_coarse (21 anatomical categories)
+Small UMAP of the 75k zebrafish transcriptome (~61k samples with expression)
+drawn at teaser-strip dimensions. Serves as a forward reference to Figure 2,
+where the full-size UMAPs live. Points are colored by devstage_curation or
+tissue_curation_coarse; no legend, no axes.
 
-Legends (with proportional stacked bars) are drawn as separate figures.
-
-Data source: pre-processed anndata with log2 TMM-CPM normalization.
-Pre-computed PCA/UMAP embeddings are used if present; otherwise computed
-following the reference notebook at:
-  /hpc/projects/data.science/duo.peng/RQ_umaps/step2.umap.expression.ipynb
+Reuses pre-computed X_umap from the anndata object (same embedding as the
+full Figure 2 UMAPs under ../Fig2/).
 """
 
 import numpy as np
@@ -308,7 +303,7 @@ fig = sc.pl.umap(
     return_fig=True,
 )
 _apply_umap_style(fig)
-out_devstage = OUTPUT_DIR / "Fig1_D_1_umap_devstage_teaser.svg"
+out_devstage = OUTPUT_DIR / "Fig1_teaser_umap_devstage.svg"
 fig.savefig(out_devstage, transparent=True)
 print(f"Saved {out_devstage}")
 plt.close()
@@ -329,7 +324,7 @@ fig = sc.pl.umap(
     return_fig=True,
 )
 _apply_umap_style(fig)
-out_tissue = OUTPUT_DIR / "Fig1_D_1_umap_tissue_teaser.svg"
+out_tissue = OUTPUT_DIR / "Fig1_teaser_umap_tissue.svg"
 fig.savefig(out_tissue, transparent=True)
 print(f"Saved {out_tissue}")
 plt.close()

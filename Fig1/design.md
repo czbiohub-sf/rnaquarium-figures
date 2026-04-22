@@ -1,272 +1,201 @@
-# RNAquarium "75k" Figure 1
+# RNAquarium "75k" Figure 1 — 2026-04 layout
 
-## Panel A: Pipeline Overview (simplified flow)
- - (from external SVG source)
+Reference draft: `Figure1draft-2026-04.png` (200 dpi export of the current
+assembly). Panel letters follow the manuscript legend (Figure 1 A/B/C); 
+the teaser row between A and B is unlettered.
 
-## Panel B: Key metrics [CURRENT]
- - table of input/output metrics
-   - table 1: host filter: run & read filtering
-   - table 2: metatranscriptome: contig breakdown
- - pie chart of sequencing technologies / seq-detective filtering outcomes
-   - pie 1: sequencing technology categories (simple)
-   - pie 2: multi-level pie chart expands non-"Other" technologies from pie 1, with outcome ring
- - scatter/hexbin of mapped reads (mate1 vs mate2) colored by seq-detective per-mate classification
- - [moved to pipeline diagram] computational resource usage per step
- - [abandoned] distributions of gene sparsity (min sparsity vs mate1/mate2 mapping ratio)
+## Panels
 
-## Panel C: Transcriptome clustering (formerly Panel D)
- - umap: development stage
- - umap: tissue type
- - legends drawn in a separate step (see below)
+### Panel A: Pipeline overview (top, full width)
+- Source: external drawio file post-processed into SVG.
+- Artifacts: `figures/Fig1_A_1_pipeline-sized.drawio.svg` (+ `.png` preview,
+  `.svg.bak` last edit backup).
+- drawio tweak helper: `scripts/pipeline_diagram/modify_drawio.py` (regex
+  patcher for HTML content inside `mxCell` values).
+- Run-count totals and CPU summaries are embedded directly in the diagram
+  SVG, not rendered as separate figure files.
 
-## Supplemental: Metadata treemaps (formerly Panel C)
- - tree map of datasets by developmental stage
- - tree map of datasets by tissue type
+### Teaser row (between A and B, unlettered, 16.1 × 2.46 cm)
+Four forward-reference thumbnails for analyses developed in later figures:
+  1. ML embedding / foundation model output (Figure 3)
+  2. Tiny transcriptome UMAP (Figure 2 full UMAP)
+  3. Gene–taxa correlation heatmap (Figure 5)
+  4. Virus phylogeny tree (Figure 4)
 
-## Layout
-total panel area dimensions; plots may be smaller
-all units in cm unless specified
+Only thumbnail 2 is scripted here (`Fig1_teaser_umap.py` →
+`figures/Fig1_teaser_umap_{devstage,tissue}.svg`). The other three come from
+their respective figure directories and are dropped in at layout time; they
+are not regenerated from Fig1/.
+
+### Panel B: Seq-Detective (bottom left, 8.1 × 5.35 cm)
+Shows that Seq-Detective is needed to triage technical vs. biological mates
+before RNA-seq processing. Three sub-elements, all drawn by two scripts:
+
+**B.1 — Technology and Seq-Detective outcome pies**
+- Script: `Fig1_B_1_pies.py` (produces both pies)
+- Outputs:
+  - `figures/Fig1_B_1_tech_pie.svg` — simple technology pie covering every
+    accession (including "Other"); no outer ring.
+  - `figures/Fig1_B_1_seqdetective_pie.svg` — multi-level pie on the
+    named-tech subset ("Other" excluded). Inner ring is the same technology
+    category as the simple pie; outer ring is the Seq-Detective per-accession
+    outcome (BB / TB / BT / TT / B / T).
+- Tech colors are computed once from the full batlow palette over all
+  categories sorted by count, so the two pies share colors for matching slices.
+
+**B.2 — Mate 1 vs mate 2 mapping scatter**
+- Script: `Fig1_B_2_seqdetective_scatter.py`
+- Output: `figures/Fig1_B_2_seqdetective_scatter.svg`
+- PE accessions only; each point colored by per-mate Seq-Detective
+  classification (B-B, T-B, B-T, T-T).
+- Draws all ~48k PE samples; hexbin gridsize 50, equal aspect.
+- Supplemental companions (drawn by the same script):
+  `figures/supplemental/Fig1_seqdetective_density_grid.svg` (2×2 per-category
+  hexbin) and `figures/supplemental/Fig1_seqdetective_technical_reasons.svg`
+  (technical-class reason breakdown).
+
+**Color palette (shared by B.1 outer ring and B.2)**
 ```
-[A 16.0 x 5.22]
-[B1 6.85 x 3.53][C2 devstage umap 6.44 x 7.125][C2 devstage legend 3.0 x 7.125]
-[B2 6.85 x 5.00][C2 tissue umap 6.44 x 7.125][C2 tissue legend 3.0 x 7.125]
-[B2 6.85 x 5.75]
+BB → #99882c  (olive, both biological)
+TB → #426f52  (forest green, M1 tech / M2 bio — common issue)
+BT → #0b2c5c  (dark navy,    M1 bio  / M2 tech — minor issue)
+TT → #f29d6c  (coral/peach,  both technical)
+B  → #c4b030  (lighter olive, close to BB but distinguishable)
+T  → #d4603c  (darker coral,  close to TT but distinguishable)
 ```
- - font: Arial
- - minimum font size: 5pt
- - maximum font size: 7pt
- - B2 nests two pies; smaller has radius ~=0.9cm, larger has total radius ~=1.8cm (including outer ring)
- - generic table row top/bottom padding at most 2pt
- - top (5.2cm A) devoted to pipeline diagram
- - below left column (6.85cm B) devoted to run statistics and seq-detective
- - below right column (9.44cm C) devoted to transcriptome output
 
-## text covering
- - optimization at multiple levels 1) ordering of tools matters (ex. efficient aligners first; k-mer tools before slow blast 2) resource profiling and job dispatch 3) smart parameterization + bug fixes to boost compute efficiency
- - developed Seq-detective to handle data format/tech-platform heterogeneity
- - progress monitoring, resume & failure recovery
- - part 1 processing overview, metrics and outputs
- - part 2 processing overview, metrics and outputs
+### Panel C: Pipeline processing outcomes (bottom right, 8.1 × 5.34 cm)
+Two `great_tables` HTML tables, screenshotted or SVG-converted for layout.
 
-# general rules
- - polars for data processing
- - tables made with `great_tables`, export to HTML, which will be screenshotted, embedded, or
-   converted to SVG later.
- - most plots export as SVG for manual editing; all SVG text is rendered as `<text>` elements (`svg.fonttype = 'none'`), never as paths
- - pie charts drawn as polar bar plots to allow multi-level information
- - color palettes: batlow, palette data in `palette/batlow`
-   - batlow (main sequential gradient)
-   - batlow/CategoricalPalettes/
-   - batlow/DiscretePalettes/
- - distribution plots need to draw all samples, so clustering algorithm must be suitable for
-   thousand distributions + 77k samples.
- - we expect ~8 meaningful clusters
- - main figures scripts should be "ipynb notebook-like" i.e. with analogies to notebook block grouping and
-   heading comments for each block.
- - avoid LLM-isms.  don't over-comment.  don't excessively print status (important checkpoints, statistics okay)
- - **FILE NAMING**: All output files use panel-specific prefixes (e.g., `Fig1_B_1_*`, `Fig1_B_2_*`, etc.)
- - **CONTOUR PLOTS**: Draw single contour level per cluster (`levels=1`) for clarity
- - **ANNOTATION TEXT**: All annotation text must have `horizontalalignment='center'`
- - **BOUNDING DIMENSIONS**: Panel dimensions are exact — draw all the way to the boundary with no added margins
+- Script: `Fig1_C_1_tables.py`
+- Outputs:
+  - `figures/Fig1_C_1_run_read_filtering.html` (full breakdown by SE / PE /
+    T-filt)
+  - `figures/Fig1_C_1_run_read_totals.html` (totals only — rendered in the
+    main figure)
+  - `figures/Fig1_C_1_contigs_breakdown.html` (metatranscriptome transcript
+    counts — rendered in the main figure)
 
-## Panel B: Table: pipeline filtering statistics
-status: COMPLETE
-old notebook: `filtering.ipynb`
-new script path: `Fig1_B_1_filtering.py`
+Columns use OUTPUT-of-stage read counts (reads that survived the filter).
+For aligners (kallisto, hisat2, star, bowtie2), `*_unaligned` counts are
+read-through-to-next-stage values; this matches
+`host-filtering.summary.after-recovery.txt`.
 
-**Data source**: `data/75k_unstable/stats-with-dropouts-enhanced.csv`
-- Use OUTPUT columns for each pipeline stage (reads that PASSED the filter)
-- For aligners (kallisto, hisat2, star, bowtie2): use `*_unaligned` columns
-  - `*_unaligned` = reads that did NOT align to host = passed through to next stage
-  - This matches `host-filtering.summary.after-recovery.txt` calculation method
-- Counts ALL runs with data at each stage (including partial/dropout runs)
-
-**Stage column mapping**:
+**Stage → data column mapping**
 ```
 starting      → starting_reads
-seq_detective → fastp_reads_before  (after download)
-fastp         → fastp_reads_after   (after quality filtering)
-kb_negative   → kallisto_unaligned  (after host filtering)
-hisat2        → hisat2_unaligned    (after hisat2 alignment)
-star          → star_unaligned      (after star alignment)
-bowtie2       → bowtie2_unaligned   (after bowtie2 alignment)
-dedup         → dedup_reads_after   (after deduplication)
-final         → final_reads         (final unmapped reads)
+seq_detective → fastp_reads_before   (post-download)
+fastp         → fastp_reads_after    (post-quality)
+kb_negative   → kallisto_unaligned   (post host filter)
+hisat2        → hisat2_unaligned
+star          → star_unaligned
+bowtie2       → bowtie2_unaligned
+dedup         → dedup_reads_after
+final         → final_reads          (input to metatranscriptome)
 ```
 
-**Outputs**:
-- `Fig1_B_1_filtering_stats_full.html`
-- `Fig1_B_1_filtering_stats_totals.html`
-- `Fig1_B_1_contigs_breakdown.html`
+## Layout (cm)
 
-## Panel B: Plots: SRA sequencing technologies pie charts
-status: REFINING
-old notebook: `create_technology_plots.py`
-new script path: `Fig1_B_2_technologies.py`
+```
+[ A 16.1 × 5.22                                            ]
+[ teaser 16.1 × 2.46 — ML | tiny UMAP | gene-taxa | virus ]
+[ B (pie + scatter) 8.1 × 5.35 ][ C (tables) 8.1 × 5.34   ]
+```
 
- - pie chart of sequencing technologies
-   - pie 1 (simple): all technology categories including "Other" — no outcome ring
-   - pie 2 (multilevel): named technologies only — **"Other" excluded** (this chart shows detail)
-     - (inner pie) technology label; proportions recomputed over non-Other samples
-     - (outer ring) seq-detective filtering outcome
+- Font: Arial; min 5 pt, max 7 pt.
+- Table row padding ≤ 2 pt.
+- Panel dimensions are exact — no added margins outside the stated bounds.
+- Pie charts are drawn as polar bar plots (lets the outer ring carry a
+  second categorical variable without stacking).
 
-**Color consistency rules**:
-- Tech category colors: shared `TECH_COLOR_MAP` computed once from full batlow palette
-  across all categories sorted by count — identical in both charts.
-- Outcome colors: aligned with Fig1_B_3 seq-detective palette (see below).
-  Single-end outcomes (B / T) are close to but visually distinct from BB / TT.
-  ```
-  BB → #99882c  (olive,         = B-B in Fig1_B_3)
-  TB → #426f52  (forest green,  = T-B in Fig1_B_3)
-  BT → #0b2c5c  (dark navy,     = B-T in Fig1_B_3)
-  TT → #f29d6c  (coral/peach,   = T-T in Fig1_B_3)
-  B  → #c4b030  (lighter olive, close to BB, distinguishable)
-  T  → #d4603c  (darker coral,  close to TT, distinguishable)
-  ```
+## Data sources
 
-**Outputs**:
-- `Fig1_B_2_technology_outcomes_multilevel.svg`
-- `Fig1_B_2_technology_categories_simple.svg`
+Current (post-recovery) files. See `.claude/data_sources.md` for discrepancy
+counts and the full column schemas.
 
-## Panel B: Read/mate distributions (mapping)
-status: WORKING (seq-detective view implemented)
-old notebook: `create_contour_plots.py`
+| Use | Path |
+|---|---|
+| Per-run pipeline stats (authoritative) | `data/75k_unstable/stats-with-dropouts-enhanced.csv` |
+| Pipeline aggregate summary | `data/75k_unstable/host-filtering.summary.after-recovery.txt` |
+| Seq-Detective per-run judgements | `data/75k_unstable/seq-detective-judgement-summary-augmented.txt` |
+| Seq-Detective per-mate metrics | `data/75k_unstable/seqdetective_metrics.parquet` |
+| SRA/GEO metadata (curated) | `/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv` |
+| Transcriptome anndata | `data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad` (symlink to versioned output) |
+| Manual technology annotations | `data/zf-core-v2-74K_problematic_with_bulk.kmers.allcols.csv` |
+| SRA accession universe | `data/75k_unstable/ZF_SraEsearch-2025-06-22.csv` |
+| Nextflow process trace | `data/75k_unstable/trace-merged-dangerously.txt` |
 
-### Approach 1: Clustering view (exploratory)
-script: `Fig1_B_3_distribution_mapping.py`
+The pipeline recovery scripts that produced `stats-with-dropouts-enhanced.csv`
+and the augmented Seq-Detective summary live under `scripts/recovery/` — see
+`scripts/recovery/RECOVERY_README.md`.
 
- - distributions of mapped reads (mate1 vs mate2) (seq-detective metric)
-   - hexbin plots, clustering by bioproject distributions.
-   - must draw all samples.  log scale density on single plot with outlines and annotation of the
-     clusters.
-     - separate cluster plots as supplemental figure
-   - **single contour level** per cluster for clarity
+## Supplemental
 
-**Data source**: `data/75k_unstable/seqdetective_metrics.parquet`
-- Uses Wasserstein distance for bioproject clustering
-- Hierarchical clustering with ward linkage
-- Cuts to ~8 clusters as expected
+Kept in `supplemental/` (scripts) and `figures/supplemental/` (outputs):
 
-**Outputs**:
-- `Fig1_B_3_mapping_mate1_vs_mate2_hexbin.svg` (main figure)
-- `Fig1_B_3_mapping_dendrogram.svg` (supplemental)
-- `Fig1_B_3_mapping_cluster_panels.svg` (supplemental)
+- `supplemental/treemaps_metadata.py` — developmental-stage and tissue
+  treemaps (was Panel C before 2026-03).
+- `supplemental/resource_usage.py` — horizontal CPU-hour bar chart per
+  pipeline step (the main-figure version is inline in the Panel A diagram).
+- `figures/supplemental/Fig1_seqdetective_density_grid.svg` and
+  `Fig1_seqdetective_technical_reasons.svg` from
+  `Fig1_B_2_seqdetective_scatter.py`.
 
-### Approach 2: Seq-Detective per-mate classification view (QUESTIONING)
-script: `Fig1_B_3_distribution_mapping_seqdetective.py`
+## Moved out
 
-Purpose: Show "this is the shape of the input, which is why we need seq-detective to filter it
-before RNA-seq processing"
+- Full UMAPs (devstage, tissue, Seq-Detective outcome, technology) moved to
+  Figure 2 — scripts at `../Fig2/umap_devstage_tissue.py` and
+  `../Fig2/umap_quality_technology.py`, renders at `figures/fig2/*.svg`.
 
- - distributions of mapped reads (mate1 vs mate2) colored by seq-detective **per-mate** classification
- - seq-detective classifies each mate independently as Biological (B) or Technical (T)
- - scatter/hexbin plots showing all ~48k PE samples in 4 categories:
-   - **B-B** (both biological): #6F7845 (olive) - 32,596 samples
-   - **T-B** (M1 technical, M2 biological): #D89E50 (orange) - 13,386 samples
-   - **B-T** (M1 biological, M2 technical): #36535F (blue-gray) - 873 samples
-   - **T-T** (both technical): #F6A986 (salmon) - 1,502 samples
- - supplemental: 2x2 grid of hexbin density plots (one per category)
- - supplemental: breakdown by filtering reason for technical samples
+## Archived / superseded
 
-**Styling (Nature-appropriate)**:
-- Colors: Custom palette (authoritative source: `BATLOW_COLORS` dict in script)
-  - B-B: #99882c (olive/yellow-green, both biological)
-  - B-T: #0b2c5c (dark navy, M1 bio M2 tech, minor issue)
-  - T-B: #426f52 (forest green, M1 tech M2 bio, common issue)
-  - T-T: #f29d6c (coral/peach, both technical)
-- Consistent dimensions: Main (8×8), Grid (12×12), Panel (16×10)
-- Consistent hexbin gridsize: 50
-- Shared scales: all axes 0-1
-- Equal aspect ratios: all subplots use `ax.set_aspect('equal')` for consistent hexbin sizing
-- Font sizes: Title 6pt, Labels 6pt, Legend 6pt, Ticks 5pt
-- Clean styling: thin spines (0.5pt), subtle grid (α=0.15)
-- Legend: Short labels ("B B (n=...)"), large markers (2.5×), semitransparent background (α=0.7)
-- Main plot title: "Seq-Detective Mate Filtering Outcomes for Mate-Paired Runs"
+- `scripts/old/filtering.ipynb`, `technologies.ipynb` — predecessor notebooks
+  for Panels C and B.
+- `scripts/old/create_contour_plots.py`, `create_technology_plots.py`,
+  `create_panel_c.py` — earlier pandas/matplotlib drafts.
+- `scripts/old/Fig1_B_3_distribution_mapping_clustering.py` — abandoned
+  Wasserstein-clustering view of the mate1/mate2 scatter.
+- `scripts/old/Fig1_B_4_distribution_sparsity.py` — abandoned sparsity
+  vs. mapping-ratio panel.
+- `figures/old/` — stale output SVGs from the above.
 
-**Data sources**:
-- `data/75k_unstable/seqdetective_metrics.parquet` (mapping rates)
-- `data/75k_unstable/seq-detective-judgement-summary-augmented.txt` (per-mate classifications)
-  - Format: ID \t mate1_file \t mate2_file \t grade1 \t grade2 \t reason
+## Conventions
 
-**Per-mate classification totals** (48,357 PE samples):
-- B-B: 32,596 (67.4%) - both mates biological
-- T-B: 13,386 (27.7%) - mate1 technical, mate2 biological
-- T-T: 1,502 (3.1%) - both mates technical
-- B-T: 873 (1.8%) - mate1 biological, mate2 technical
+- `polars` for tabular wrangling (avoid mixing with pandas in new scripts).
+- Tables via `great_tables`, exported as HTML.
+- Plots export as SVG; set `plt.rcParams['svg.fonttype'] = 'none'` so all
+  text stays as `<text>` elements rather than paths.
+- Pie charts drawn as polar bar plots so the outer ring can carry a second
+  categorical variable.
+- Color palette: `batlow` (main sequential), `batlow/CategoricalPalettes/`,
+  `batlow/DiscretePalettes/`. Palette files in `palette/`.
+- Distribution plots draw every sample — a clustering algorithm used for
+  panel design has to scale to ~thousand distributions × 77k samples. We
+  expected ~8 meaningful clusters when that approach was live.
+- Main-figure scripts read like notebooks (block comments per section, no
+  excessive print noise).
+- Annotation text uses `horizontalalignment='center'`.
+- Contour plots use a single level per cluster (`levels=1`).
+- Panel dimensions are exact — draw to the boundary, no added margins.
+- File-naming: main-figure outputs go `Fig1_<panel>_<n>_<description>.svg`;
+  supplemental outputs drop the panel letter (`Fig1_<description>.svg`).
+  Scripts may be run from the Fig1/ root (they resolve `data/` and `figures/`
+  relative to the CWD).
 
-**Common filtering reasons**:
-- Biological: "biological fallback assumption", "mate1-mate2 similar by mapping diff"
-- Technical: "mate1 technical by mapping diff", "mates < 9% mapping rate", "sc-like readlen"
+## Open issues
 
-**Outputs**:
-- `Fig1_B_3_mapping_seqdetective_categories.svg` (main: scatter colored by category)
-- `Fig1_B_3_mapping_seqdetective_density_grid.svg` (supplemental: 2x2 hexbin grid)
-- `Fig1_B_3_mapping_seqdetective_technical_reasons.svg` (supplemental: technical reasons) 
+Flagged during the 2026-04 reorg, to revisit:
 
-## Computational resource usage (moved to pipeline diagram, Panel A)
-status: MOVED — resource counts are now summarized directly in the pipeline diagram SVG (Panel A),
-not presented as a separate Panel B figure.
-script `Fig1_B_5_resource_usage.py` kept for reference / supplemental use.
-
-
-## Panel C: Transcriptome UMAPs
-status: REFINING
-new script path: `Fig1_D_1_umap.py`
-
-reference umap notebook: `/hpc/projects/data.science/duo.peng/RQ_umaps/step2.umap.expression.ipynb`
-
-**Data source**: `data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad`
-  (symlink → `/hpc/projects/balla_group/sra_experiments/versioned_zf_output/75k_unstable/adata_obj/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad`)
-- 61,615 samples × 22,252 genes (log2 TMM-CPM normalized)
-- Pre-computed `X_pca` and `X_umap` in `obsm` — used directly, no recomputation needed
-- If UMAP absent: recomputes following reference notebook (top-2000 HVG, scale, 50 PCA, 100-neighbor graph, min_dist=0.5)
-
-**UMAP styling**:
-- No plot border (spines off), no axis labels, no tick marks
-- Small inset axes in bottom-left corner with arrow labels: "↑ UMAP 2" (y-axis) and "UMAP 1 →" (x-axis)
-  - Inset is purely decorative; drawn as annotation arrows + text, not a real axis
-
-**Color palette for tissue**: batlow discrete (palette/batlow/DiscretePalettes/batlow100.txt)
-- "Undetermined" → #9E9E9E (gray)
-- "All anatomical structures" → #BDBDBD (light gray)
-- All other categories: golden-ratio stride through batlow100
-
-**Color palette for devstage**: discrete chronological gradient
-- Chronological order: Embryo → Larval → Juvenile → Adult (4 steps, evenly spaced from batlow sequential)
-- Multi-stage → distinct non-gradient color (batlow midpoint, visually separate)
-- Undetermined → #9E9E9E (gray)
-
-**Outputs** (no title on any):
-- `Fig1_D_1_umap_devstage.svg` (devstage_curation_coarse, 6 categories)
-- `Fig1_D_1_umap_tissue.svg` (tissue_curation_coarse, 21 categories)
-
-**Legend step** (drawn as separate figures, placed to the left of UMAPs in layout):
-- Shared legend+bar panel per UMAP view (devstage and tissue)
-- Each legend entry: color swatch + category label (no n= count in label text)
-- Devstage legend order: Embryo, Larval, Juvenile, Adult, Multi-stage, Undetermined (chronological)
-- Tissue legend order: by count descending
-- Alongside legend: vertical stacked bar showing proportion each category comprises of total dataset
-  - n= sample counts used as bar segment labels (not in legend text)
-- Outputs:
-  - `Fig1_D_1_umap_devstage_legend.svg`
-  - `Fig1_D_1_umap_tissue_legend.svg`
-
-
-## Panel C: UMAPs — data quality / technology views (Fig1_D_2)
-status: NEW
-new script path: `Fig1_D_2_umap.py`
-
-Reuses pre-computed `X_umap` from D.1 anndata; no recomputation.
-
-**View 1**: colored by seq-detective filtering outcome
-- Outcome column: grade1+grade2 for PE (BB/BT/TB/TT), grade1 only for SE (B/T)
-- Missing = "Unknown" → gray `#9E9E9E`
-- Colors: same fixed palette as `Fig1_B_2 OUTCOME_COLORS` / `Fig1_B_3 BATLOW_COLORS`
-
-**View 2**: colored by sequencing technology
-- Same category mapping as Fig1_B_2 (`map_technology_category`)
-- "Other" → `#BDBDBD`, "Unknown" → `#9E9E9E`; named techs use batlow by count rank
-
-**Outputs**:
-- `Fig1_D_2_umap_sd_outcomes.svg`
-- `Fig1_D_2_umap_technology.svg`
+- `Fig1_B_1_seqdetective_pie.py` still references the old kmers-annotation
+  CSV at `data/zf-core-v2-74K_problematic_with_bulk.kmers.allcols.csv`
+  (Sep 2025). Worth auditing whether a fresher annotation source exists.
+- `supplemental/treemaps_metadata.py` reads the curated metadata tsv via
+  a hard-coded absolute HPC path. A local symlink under `data/` would make
+  the script portable.
+- `scripts/recovery/extract_seqdetective_metrics.py` was built against
+  `seq-detective-judgement-summary-all.txt`; confirm it should now read the
+  `-augmented` file (or decide that one-shot extraction from the original
+  is the intended behaviour).
+- `modify_drawio.py` contains an absolute path to the drawio SVG; relocate
+  to `scripts/pipeline_diagram/` kept it tidy but the path should be made
+  relative.
