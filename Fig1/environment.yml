@@ -1,13 +1,22 @@
-name: rnaquarium-figs-dev
+name: rnaquarium-figs
 channels:
-- conda-forge
-- bioconda
-- anaconda
+ - conda-forge
 dependencies:
-- jupyterlab=4.2.1
-- matplotlib=3.8.4
-- pandas=2.1.1
-- conda-forge::polars
-- bioconda::entrez-direct
-- python=3.12
-
+ - jupyterlab>=4.2.1
+ - matplotlib>=3.9.1
+ - conda-forge::pandas=2.2.3
+ - python=3.12
+ - ruff
+ - shellcheck
+ - plotly=5.24.1
+ - bioconda::entrez-direct
+ - ca-certificates
+ - certifi
+ - openssl
+ - polars
+ - conda-forge::pyarrow
+ - conda-forge::seaborn
+ - conda-forge::upsetplot
+ - great_tables
+ - intervaltree
+ - bedtools

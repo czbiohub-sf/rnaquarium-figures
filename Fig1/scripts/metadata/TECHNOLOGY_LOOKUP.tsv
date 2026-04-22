@@ -1,0 +1,26 @@
+Technology	Category	Method	Bias	Layout	Key_Keywords	Regex_Pattern	Source_Column	Confidence
+10x_Genomics_Chromium	single-cell	droplet	3'	paired-end	10x chromium gem droplet v3 single cell	(?i)(10x|chromium).{0,80}(gem|droplet|v[23]|3.*(gene|expression))	library_construction_protocol	high
+CEL-Seq	single-cell	well-plate-barcode	3'	paired-end	celseq barcode pool	(?i)cel-?seq	library_construction_protocol	high
+MARS-Seq	single-cell	well-plate-barcode	3'	paired-end	mars-seq barcode well	(?i)mars-?seq	library_construction_protocol	high
+SMART-Seq	single-cell	full-length-capture	full-length	varies	smartseq ultra low input	(?i)smart-?seq.{0,50}(ultra|v[234]|low.input)	library_construction_protocol	high
+Drop-Seq	single-cell	droplet	unspecified	varies	drop-seq microfluidic	(?i)drop-?seq	library_construction_protocol	medium
+Nextera_XT	DNA_Fragmentation	fragmentation	N/A	paired-end	nextera xt fragmentation	(?i)nextera.xt	library_construction_protocol	medium
+TruSeq_Stranded	bulk	standard_illumina	unbiased	paired-end	trueseq stranded rna	(?i)true-?seq.{0,50}(stranded|total|rna)	library_construction_protocol	high
+TruSeq_PolyA	bulk	standard_illumina	3'	paired-end	trueseq polya mrna	(?i)true-?seq.*(poly.?a|mrna)	library_construction_protocol	high
+Lexogen_QuantSeq_3prime	bulk	3prime_biased	3'	single-end	lexogen quantseq 3' forward fwd	(?i)(lexogen|quant-?seq).{0,50}3.	library_construction_protocol	high
+Lexogen_QuantSeq_5prime	bulk	5prime_biased	5'	single-end	lexogen quantseq 5' reverse rev	(?i)(lexogen|quant-?seq).{0,50}5.	library_construction_protocol	medium
+NEBNext_Ultra	bulk	standard	unbiased	paired-end	nebnext ultra directional	(?i)neb-?next.{0,50}(ultra|directional|rna)	library_construction_protocol	high
+BGISeq	bulk	bgi_platform	unbiased	paired-end	bgiseq dnbseq	(?i)(bgiseq|dnbseq)	library_construction_protocol	medium
+Illumina_TruSeq	bulk	standard_illumina	unbiased	paired-end	illumina trueseq	(?i)illumina.{0,30}true-?seq	library_construction_protocol	high
+Ribo-Zero_Depletion	bulk	rrna_depletion	unbiased	paired-end	ribozero rrna depletion	(?i)(ribo.?zero|rrna.depl)	library_construction_protocol	high
+Whole_Transcriptome	bulk	random_priming	full-length	paired-end	whole transcriptome random hexamer	(?i)(whole.transcr|random.prim|random.hex)	library_construction_protocol	medium
+Poly-A_Selection	bulk	polya_selection	3'	paired-end	polya oligo dt mrna	(?i)(poly.a|polya|oligo.?dt|mrna.select)	library_construction_protocol	high
+MiRNA_Seq	specialized	small_rna	N/A	varies	small rna mirna trna	(?i)(small.rna|mirna|trna|18-30.nt)	library_construction_protocol	high
+ATAC-Seq	specialized	atac	N/A	paired-end	atac accessible chromatin	(?i)atac.?seq	library_strategy	high
+ChIP-Seq	specialized	chip	N/A	paired-end	chip seq chromatin	(?i)chip.?seq	library_strategy	high
+Unknown_Protocol	unknown	unknown	unknown	unknown	text not matching common patterns	N/A	library_construction_protocol	low
+
+Barcode_Present	structural	barcode	N/A	N/A	barcode umi technical read	<READ_CLASS>Technical\s*Read</READ_CLASS>	spot_descriptor	high
+Single_End_Read	structural	single-end	N/A	single-end	single forward read	<READ_SPEC>.*<READ_INDEX>0.*Forward.*</READ_SPEC>	spot_descriptor	high
+Paired_End_Read	structural	paired-end	N/A	paired-end	multiple read specs forward reverse	(<READ_SPEC>){2,}	spot_descriptor	high
+Long_Insert	structural	long_insert	N/A	N/A	>500bp spot length	<SPOT_LENGTH>([5-9][0-9]{2,})</SPOT_LENGTH>	spot_descriptor	medium
