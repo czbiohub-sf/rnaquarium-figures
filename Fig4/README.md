@@ -1,7 +1,8 @@
-# Figure 2 - Integrated host/microbe transcript abundance across the RNAquarium
+# Figure 4 - Diversity of evolutionary histories and tissue tropisms among zebrafish viruses
 
- - Annotating/integrating UMAP with virus abundance
- - Selected virus abundance across tissues
+ - Panels A,B,D made using Jupyter notebooks saved
+ - Panel C phylogenetic tree images made using Geneious with inputs saved
+ - Panel E schematic made by Keir
 
 ## Inputs
 
