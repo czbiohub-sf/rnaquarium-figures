@@ -1,6 +1,6 @@
-# Figure 2 - Host gene expression resource
+# Figure 3 - AI modeling of archive-wide transcriptomes and analysis of gene representations
 
- - Visualization of gene expression (UMAP annotated with selected metadata features, developmental time, tissue..)
+ - A-G from Hejin
 
 ## Inputs
 
