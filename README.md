@@ -1,8 +1,6 @@
 # RNAquarium
 
-This repository contains scripts and notebooks for analyzing and documenting the
-RNAquarium pipeline as run on zebrafish RNA-seq data from NCBI SRA in April
-2024. (As well as supporting details from mosquito and bat runs)
+This repo contains the code and data used to generate the figures for the RNAquarium paper.
 
  - Figure 1: [RNAquarium pipeline](https://github.com/czbiohub-sf/rnaquarium-figures/tree/main/Fig1)
  - Figure 2: [Virus/microbe discoveries](https://github.com/czbiohub-sf/rnaquarium-figures/tree/main/Fig2)
