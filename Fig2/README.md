@@ -30,6 +30,8 @@ stages:
 | `scripts/tmm.py` | TMM normalization + explicit filtering; emits `log2(TMM-CPM + prior_count)`. |
 | `scripts/zebrafish_tissue_markers.py` | Literature-curated tissue marker dictionary (transgenic lines + PMIDs). |
 | `scripts/zebrafish_stage_markers.py` | Literature-curated developmental-stage marker dictionary (with PMIDs). |
+| `umap_devstage_tissue.py` | Fig 2A (devstage) and 2C (tissue) UMAPs with legends |
+| `umap_quality_technology.py` | UMAP colored by Seq-Detective filtering outcome and by sequencing technology |
 
 ## Inputs
 
@@ -53,8 +55,13 @@ the root `Makefile` to symlink a data source directory.
 
 Written to `output/`:
 
-- UMAP figures: `umap_tissue_curation_coarse.{pdf,svg}`,
+- UMAP figures (notebook): `umap_tissue_curation_coarse.{pdf,svg}`,
   `umap_devstage_curation.{pdf,svg}`.
+- UMAP figures (standalone scripts): `Fig2_A_umap_devstage_curation.svg`,
+  `Fig2_A_umap_devstage_curation_legend.svg`,
+  `Fig2_C_umap_tissue_curation_coarse.svg`,
+  `Fig2_C_umap_tissue_curation_coarse_legend.svg`,
+  `umap_sd_outcomes.svg`, `umap_technology.svg`.
 - Marker tables: `{tissue_curation_coarse,devstage_curation}_markers.csv`
   (with companion `*_rank_genes_groups.pkl`).
 - Marker-gene panels: `*_marker_genes.pdf`,
@@ -73,7 +80,14 @@ Run everything from the repository root.
    and writes `log2(TMM-CPM + prior_count)` to a parquet file. See `tmm.sh` for
    the invocation; set the `$PATH_TO_*` variables to point at your data first.
 
-2. **Run the notebook.**
+2. **Run the standalone UMAP scripts** (optional; produce panel-labelled SVGs).
+   Run from the `Fig2/` directory:
+   ```sh
+   python umap_devstage_tissue.py
+   python umap_quality_technology.py
+   ```
+
+3. **Run the notebook.**
    ```sh
    jupyter lab Fig2/Fig2ABCD_umap_and_marker_genes.ipynb
    ```
