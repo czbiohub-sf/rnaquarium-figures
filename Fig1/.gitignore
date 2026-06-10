@@ -1,3 +1,8 @@
 # intermediate notebooks and results (respectively) not to be committed
 scratch
 intermediate
+data
+
+full_metadata_combined.csv
+scripts/metadata/unique_values
+scripts/metadata/*.csv
