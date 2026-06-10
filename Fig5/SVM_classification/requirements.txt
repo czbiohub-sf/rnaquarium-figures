@@ -1,0 +1,22 @@
+# Python 3.10 (developed and tested with CPython 3.10.16)
+#
+# Core scientific stack used by the SVM training scripts and the three plotting
+# notebooks. Versions are pinned to those used to produce the published figures;
+# nearby versions are very likely to work as well.
+numpy==2.2.6
+pandas==2.3.1
+scipy==1.15.3
+matplotlib==3.10.3
+seaborn==0.13.2
+
+# SVM training (RBF + LinearSVC) and downstream metric utilities.
+scikit-learn==1.5.2
+
+# Reading the AnnData h5ad input (gene expression matrix + cell metadata).
+anndata==0.11.4
+scanpy==1.10.4
+h5py==3.13.0
+
+# To open and run the notebooks (any Jupyter front-end works).
+ipykernel==6.30.1
+jupyterlab        # or:  notebook
