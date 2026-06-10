@@ -9,9 +9,8 @@ upstream assembly/quantification, not included here — see **Data availability*
 set of hand-curated tables (included). It runs in **R**.
 
  - The following readme and accompanying code and DATA_MANIFEST are for generating panels A, B & D
- - Panel C phylogenetic tree images made using Geneious with inputs saved
- - Panel E schematic made using scRNAseq_DBPV_analysis.R code example
-
+ - Panel C phylogenetic tree images made using Geneious with inputs saved (`HA_forfigureAA_` & `PB2_forfigureAA_` files)
+ - Panel E schematic made using `scRNAseq_DBPV_analysis.R` code example
 
 ## Pipeline (run in order)
 
