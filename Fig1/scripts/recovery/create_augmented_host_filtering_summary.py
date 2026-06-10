@@ -3,11 +3,20 @@
 Create augmented host-filtering summary that includes dropout run statistics.
 """
 
+import argparse
 import polars as pl
 from pathlib import Path
 
 # Paths
-ORIGINAL_SUMMARY = Path("/hpc/projects/balla_group/sra_experiments/versioned_zf_output/75k_unstable/host_mapping/host-filtering.summary.txt")
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--original-summary", type=Path,
+    default=Path("data/75k_unstable/host-filtering.summary.txt"),
+    help="Original pipeline host-filtering summary to augment with dropout stats.",
+)
+_args, _ = _parser.parse_known_args()
+
+ORIGINAL_SUMMARY = _args.original_summary
 STATS_WITH_DROPOUTS = Path("data/75k_unstable/stats-with-dropouts-enhanced.csv")
 SEQDETECTIVE_AUGMENTED = Path("data/75k_unstable/seq-detective-judgement-summary-augmented.txt")
 OUTPUT_PATH = Path("data/75k_unstable/host-filtering.summary.after-recovery.txt")

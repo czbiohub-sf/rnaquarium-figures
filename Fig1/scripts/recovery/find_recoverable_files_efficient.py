@@ -4,6 +4,7 @@ Find which dropout runs have recoverable files in nextflow work directories.
 NFS-optimized: builds index once, then looks up hashes.
 """
 
+import argparse
 import polars as pl
 from pathlib import Path
 import os
@@ -14,7 +15,16 @@ from collections import defaultdict
 STATS_PATH = Path("data/75k_unstable/stats-merged.csv")
 SEQDETECTIVE_PATH = Path("data/75k_unstable/seq-detective-judgement-summary-all.txt")
 TRACE_PATH = Path("data/75k_unstable/trace-merged-dangerously.txt")
-NF_TMP_BASE = Path("/hpc/scratch/group.data.science/y_temp/nf_tmp")
+
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--nf-tmp-base", type=Path,
+    default=Path("data/75k_unstable/nf_work"),
+    help="Root of the Nextflow work-directory tree to scan for recoverable files.",
+)
+_args, _ = _parser.parse_known_args()
+
+NF_TMP_BASE = _args.nf_tmp_base
 
 
 def load_data():

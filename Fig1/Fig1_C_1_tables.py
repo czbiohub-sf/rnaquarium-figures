@@ -26,7 +26,9 @@ _GT_OPTIONS = dict(
 # =============================================================================
 
 STATS_FILE = Path("data/75k_unstable/stats-with-dropouts-enhanced.csv")
+STATS_MERGED = Path("data/75k_unstable/stats-merged.csv")
 SEQDETECTIVE_FILE = Path("data/75k_unstable/seq-detective-judgement-summary-augmented.txt")
+TRACE_FILE = Path("data/75k_unstable/trace-merged-dangerously.txt")
 HOST_SUMMARY = Path("data/75k_unstable/host-filtering.summary.after-recovery.txt")
 OUTPUT_DIR = Path("figures")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -69,6 +71,33 @@ print(judgement_map.group_by("tech_group").len().sort("tech_group"))
 # Load stats file with all pipeline metrics
 filter_stats = pl.read_csv(STATS_FILE)
 print(f"Loaded {len(filter_stats)} pipeline statistics records")
+
+# Load complete runs and trace for dropout analysis
+stats_merged = pl.read_csv(STATS_MERGED)
+complete_ids = set(stats_merged["id"].to_list())
+n_complete = len(complete_ids)
+
+# Load and deduplicate trace (keep best status per tag/process)
+if TRACE_FILE.exists():
+    trace = pl.read_csv(TRACE_FILE, separator="\t", null_values="-")
+    trace_clean = (
+        trace
+        .filter(pl.col("task_id") != "task_id")
+        .with_columns(pl.col("task_id").cast(pl.Int64))
+        .with_columns(
+            pl.col("status").replace({
+                "COMPLETED": 0, "CACHED": 0, "FAILED": 1, "ABORTED": 2
+            }).cast(pl.Int32).alias("status_rank")
+        )
+    )
+    deduped_trace = (
+        trace_clean
+        .sort(["status_rank", "task_id"], descending=[False, True])
+        .unique(subset=["tag", "process"], keep="first")
+        .filter(pl.col("tag").is_in(set(judgement_map["id"].to_list())))  # exclude strays
+    )
+else:
+    deduped_trace = None
 
 # =============================================================================
 # Calculate run counts by stage and technology group
@@ -277,5 +306,75 @@ contigs_table = (
 html_content = contigs_table.as_raw_html()
 (OUTPUT_DIR / "Fig1_C_1_contigs_breakdown.html").write_text(html_content)
 print(f"Saved contigs table to {OUTPUT_DIR / 'Fig1_C_1_contigs_breakdown.html'}")
+
+# =============================================================================
+# Trace-adjusted run counts table (complete + dropout per stage, by tech group)
+# =============================================================================
+
+if deduped_trace is not None:
+    tech_group_map = dict(zip(judgement_map["id"].to_list(), judgement_map["tech_group"].to_list()))
+
+    complete_tech = {}
+    for run_id in complete_ids:
+        tg = tech_group_map.get(run_id)
+        if tg:
+            complete_tech[tg] = complete_tech.get(tg, 0) + 1
+
+    # Each row = output of that step = unique tags seen by the *next* process
+    # (regardless of whether the next process completed).
+    # read_col = column representing reads output from that step.
+    STAGE_NEXT_PROCESS = [
+        ("Input",         "download",    "starting_reads"),
+        ("Seq-Detective", "fastp",       "fastp_reads_before"),
+        ("fastp",         "kb_negative", "fastp_reads_after"),
+        ("Kallisto",      "hisat2",      "kallisto_unaligned"),
+        ("HISAT2",        "star",        "hisat2_unaligned"),
+        ("STAR",          "bowtie2",     "star_unaligned"),
+        ("Bowtie2",       "dedup",       "bowtie2_unaligned"),
+        ("dedup",         "gsnap",       "dedup_reads_after"),
+        ("GSNAP (final)", "stats_csv",   "final_reads"),
+    ]
+
+    trace_rows = []
+    for display, next_process, read_col in STAGE_NEXT_PROCESS:
+        total_runs = deduped_trace.filter(
+            pl.col("process") == next_process
+        )["tag"].n_unique()
+
+        total_reads = (
+            stats_with_tech
+            .filter(pl.col(read_col).is_not_null())[read_col]
+            .sum()
+        ) if read_col in stats_with_tech.columns else None
+
+        trace_rows.append({
+            "step": display,
+            "total_runs": total_runs,
+            "total_reads": total_reads,
+        })
+
+    trace_df = pl.DataFrame(trace_rows)
+
+    trace_table = (
+        GT(trace_df)
+        .tab_header("Zebrafish Run & Read Filtering")
+        .cols_label(step="Pipeline Step", total_runs="Runs", total_reads="Reads")
+        .fmt_integer(columns="total_runs")
+        .fmt_number(
+            columns="total_reads",
+            compact=True,
+            pattern="{x}",
+            scale_by=1,
+            n_sigfig=3
+        )
+        .data_color(columns="total_reads", palette="Blues", domain=[1e9, 2e12])
+        .tab_options(**_GT_OPTIONS)
+    )
+
+    html_content = trace_table.as_raw_html()
+    (OUTPUT_DIR / "Fig1_C_1_trace_adjusted.html").write_text(html_content)
+    print(f"\nSaved trace-adjusted table to {OUTPUT_DIR / 'Fig1_C_1_trace_adjusted.html'}")
+    print("\nTrace-adjusted run counts:")
+    print(trace_df)
 
 print("\nDone!")

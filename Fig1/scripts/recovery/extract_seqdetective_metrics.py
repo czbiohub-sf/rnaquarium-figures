@@ -6,15 +6,30 @@ Outputs a parquet file with mapping_rate, sparsity, etc. for each mate.
 Optimized to avoid NFS metadata operations - uses run ID list from judgement file.
 """
 
+import argparse
 import json
 import polars as pl
 from pathlib import Path
 import sys
 
-SEQDETECTIVE_DIR = Path("/hpc/projects/balla_group/sra_experiments/versioned_zf_output/75k_unstable/host_mapping/download")
 JUDGEMENT_PATH = Path("data/75k_unstable/seq-detective-judgement-summary-all.txt")
 OUTPUT_PATH = Path("data/75k_unstable/seqdetective_metrics.parquet")
-ROSETTA_PATH = Path("/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/zf_rosetta.tsv")
+
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--seqdetective-dir", type=Path,
+    default=Path("data/75k_unstable/host_mapping/download"),
+    help="Pipeline output download/ tree holding per-run seq-detective JSON files.",
+)
+_parser.add_argument(
+    "--rosetta-path", type=Path,
+    default=Path("data/metadata/zf_rosetta.tsv"),
+    help="Rosetta TSV mapping run IDs to accessions.",
+)
+_args, _ = _parser.parse_known_args()
+
+SEQDETECTIVE_DIR = _args.seqdetective_dir
+ROSETTA_PATH = _args.rosetta_path
 
 
 def parse_json_file(json_path: str) -> dict | None:

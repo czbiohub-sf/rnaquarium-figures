@@ -4,14 +4,24 @@ Create augmented seq-detective judgement summary that includes recovered entries
 Reads from both the original seq-detective summary and newly recovered download directories.
 """
 
+import argparse
 import polars as pl
 from pathlib import Path
 
 # Paths
 ORIGINAL_SEQDETECTIVE = Path("data/75k_unstable/seq-detective-judgement-summary-all.txt")
 RECOVERABLE_CSV = Path("data/75k_unstable/recoverable_files.csv")
-DOWNLOAD_BASE = Path("/hpc/projects/balla_group/sra_experiments/versioned_zf_output/75k_unstable/host_mapping/download")
 OUTPUT_PATH = Path("data/75k_unstable/seq-detective-judgement-summary-augmented.txt")
+
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--download-base", type=Path,
+    default=Path("data/75k_unstable/host_mapping/download"),
+    help="Pipeline output download/ tree holding recovered seq-detective judgements.",
+)
+_args, _ = _parser.parse_known_args()
+
+DOWNLOAD_BASE = _args.download_base
 
 
 def load_original_seqdetective():

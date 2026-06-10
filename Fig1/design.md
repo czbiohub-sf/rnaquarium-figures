@@ -110,8 +110,7 @@ final         → final_reads          (input to metatranscriptome)
 
 ## Data sources
 
-Current (post-recovery) files. See `.claude/data_sources.md` for discrepancy
-counts and the full column schemas.
+Current (post-recovery) files:
 
 | Use | Path |
 |---|---|
@@ -119,7 +118,7 @@ counts and the full column schemas.
 | Pipeline aggregate summary | `data/75k_unstable/host-filtering.summary.after-recovery.txt` |
 | Seq-Detective per-run judgements | `data/75k_unstable/seq-detective-judgement-summary-augmented.txt` |
 | Seq-Detective per-mate metrics | `data/75k_unstable/seqdetective_metrics.parquet` |
-| SRA/GEO metadata (curated) | `/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv` |
+| SRA/GEO metadata (curated) | `data/metadata/all_zf_dates_devstage_tissue_tech_curated.tsv` |
 | Transcriptome anndata | `data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad` (symlink to versioned output) |
 | Manual technology annotations | `data/zf-core-v2-74K_problematic_with_bulk.kmers.allcols.csv` |
 | SRA accession universe | `data/75k_unstable/ZF_SraEsearch-2025-06-22.csv` |

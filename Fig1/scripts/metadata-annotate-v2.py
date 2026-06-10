@@ -191,11 +191,11 @@ SC_TECH_NAMES = frozenset({
     '10x', 'marsseq', 'smartseq', 'dropseq', 'droncseq', 'celseq',
     'indrops', 'matqseq', 'quartzseq', 'splitseq', 'scirnaseq',
     'microwellseq', 'cytoseq', 'seqwell', 'fluidigm', 'icell8',
-    'strtseq', 'sortseq', 'scartrace',
+    'strtseq', 'sortseq', 'scartrace', 'scslamseq',
 })
 
-# Bulk-specific kit/platform names (for conflict detection)
-BULK_TECH_NAMES = frozenset({'bulk', 'trueseq', 'nebnext', 'lexogen', 'nextera', 'ribozero'})
+# Bulk-specific technology names (for conflict detection)
+BULK_TECH_NAMES = frozenset({'bulk', 'detct', 'slamseq'})
 
 # Tech → implied read bias (used in conflict checking)
 TECH_IMPLIES_3PRIME  = frozenset({'10x', 'celseq', 'marsseq', 'dropseq', 'droncseq',
@@ -206,6 +206,36 @@ TECH_IMPLIES_FULLENGTH = frozenset({'smartseq', 'fluidigm'})
 TECH_IMPLIES_PAIRED = frozenset({'10x', 'dropseq', 'droncseq', 'marsseq', 'celseq',
                                   'indrops', 'splitseq', 'scirnaseq'})
 
+TECH_CLASS_MAP = {
+    '10x':                  'single_cell_droplet',
+    'dropseq':              'single_cell_droplet',
+    'indrops':              'single_cell_droplet',
+    'droncseq':             'single_cell_droplet',
+    'smartseq':             'single_cell_plate',
+    'fluidigm':             'single_cell_plate',
+    'celseq':               'single_cell_plate',
+    'marsseq':              'single_cell_plate',
+    'quartzseq':            'single_cell_plate',
+    'scirnaseq':            'single_cell_plate',
+    'splitseq':             'single_cell_plate',
+    'microwellseq':         'single_cell_plate',
+    'strtseq':              'single_cell_plate',
+    'cytoseq':              'single_cell_plate',
+    'seqwell':              'single_cell_plate',
+    'icell8':               'single_cell_plate',
+    'matqseq':              'single_cell_plate',
+    'superseq':             'single_cell_plate',
+    'generic-scrnaseq-only':'single_cell_generic',
+    'bulk':                 'bulk',
+    'detct':                'bulk',
+    'slamseq':              'bulk',
+    'scslamseq':            'single_cell_plate',
+    'iclip':                'clip',
+    'scartrace':            'other_seq',
+    '454':                  'other_seq',
+    'unknown':              'unknown',
+}
+
 
 # ---------------------------------------------------------------------------
 # Pattern lists
@@ -213,15 +243,15 @@ TECH_IMPLIES_PAIRED = frozenset({'10x', 'dropseq', 'droncseq', 'marsseq', 'celse
 
 # Preserved from metadata-annotate.py with targeted fixes (see comments).
 TECH_PATTERNS = [
-    pattern('bulk',              r'(the |nano(particles)?[^a-z]* ?)?bulk',            0),
+    pattern('bulk',              r'\bbulk\b.{0,40}(?:rna|transcriptom|seq)|\btotal\s+rna\b.{0,30}librar', 1),
     # 10x1 was r'[^\t;]*(?<!/)10x[^\t;]*' — matched "10x PBS", "10x TBE", dilution
     # factors, etc.  Replaced with context-anchored pattern requiring nearby
     # 10x-Genomics-specific terms so reagent concentrations don't false-match.
-    pattern('10x1',              r'\b10[xX]\b.{0,60}(?:genomics|chromium|single.cell|GEM|v[23]|gene.express|flex|multiome)|(?:chromium|genomics).{0,60}\b10[xX]\b', 0),
+    pattern('10x1',              r'\b10[xX]\b.{0,20}(?:master\s*mix|barcode)|\b10[xX]\b.{0,60}(?:genomics|chromium|single.cell|[Gg][Ee][Mm]s?|v[23]|gene.express|flex|multiome)|(?:chromium|genomics).{0,60}\b10[xX]\b', 0),
     pattern('10x2',              r'chromium',                                          1),
     pattern('10x3',              r'Gel Bead Kit V3',                                  1),
     pattern('droncseq',          r'dronc[-_ ]?seq',                                   1),
-    pattern('dropseq',           r'\bdrop[-_ ]?seq',                                  0),
+    pattern('dropseq',           r'(?<![Uu]nlike )(?<![Cc]ompared to )\bdrop[-_ ]?seq(?!\s+[Tt]ools)', 0),
     pattern('fluidigm',          r'fluidigm',                                          1),
     pattern('indrops',           r'indrops?',                                          1),
     pattern('marsseq',           r'\bmars[-_ ]?seq',                                   1),
@@ -234,6 +264,11 @@ TECH_PATTERNS = [
     pattern('smartseq1',         r'smart[-_ ]?seq[234]',                              1),
     pattern('smartseq2',         r'smart template[- ]switching',                      1),
     pattern('smartseq3',         r'SMARTSeq\s+v[._ ]?\d|clontech.{0,25}smart[-_ ]?seq(?!\s*ultra)', 0),
+    pattern('smartseq4',         r'smart[-_ ]?seq\s*(?:TM|™)',                        0),
+    pattern('smartseq5',         r'smart[-_ ]?seq\s*[®™]?\s*v[234]|SMART-Seq\s+v[234]', 1),
+    pattern('detct',             r'\bdetct\b|DeTCT',                                  0),
+    pattern('scslamseq',         r'\bsc[-_ ]?slam[-_ ]?seq\b',                        0),
+    pattern('slamseq',           r'(?<![Ss][Cc][-_ ]?)\bslam[-_ ]?seq\b|4-thiouridine|s4U.{0,20}label',  0),
     pattern('splitseq',          r'split[-_ ]?seq',                                   1),
     pattern('superseq',          r'super[-_ ]?seq',                                   1),
     pattern('microwellseq',      r'microwell[-_ ]?seq',                               1),
@@ -247,14 +282,6 @@ TECH_PATTERNS = [
     pattern('iclip',             r'iclip',                                             0),
     pattern('454',               r'\b((LS|Roche )454|454 FLX)\b',                     0),
     pattern('scartrace',         r'scartrace',                                         0),
-    # Bulk library prep kits — added from REGEX_RULES.md / TECHNOLOGY_LOOKUP.tsv
-    pattern('lexogen1',          r'lexogen',                                           0),
-    pattern('lexogen2',          r'\bquant.?seq\b',                                   0),
-    pattern('nebnext',           r'neb.?next',                                        0),
-    pattern('trueseq1',          r'\btrue?.?seq\b',                                   0),
-    pattern('trueseq2',          r'illumina.{0,30}(strand|total.rna|mrna.kit)',       1),
-    pattern('nextera',           r'\bnextera\b',                                       0),
-    pattern('ribozero',          r'ribo.?zero',                                        0),
     pattern('generic-scrnaseq1', r'sc[-_ ]?RNA[-_ ]?seq',                             0),
     pattern('generic-scrnaseq2', r'single[-_ ]?cell[-_ ]?(RNA[-_ ])?seq(uencing)?',   1),
     pattern('generic-scrnaseq3', r'scslam[-_ ]?seq',                                  0),
@@ -284,30 +311,50 @@ SELECTION_HINT_PATTERNS = [
     pattern('sel_smallrna_hint', r'small.?rna|\bmirna\b|microrna|\btrna\b|18.30.nt',   0),
 ]
 
-ALL_PATTERNS = TECH_PATTERNS + BIAS_PATTERNS + SELECTION_HINT_PATTERNS
-
 # Aliases: multi-pattern groups that get summed into one column.
 # Naming convention: group[0] stripped of trailing digit gives the alias name.
 # e.g. ['10x1','10x2','10x3'] → '10x'.  ['lexogen1','lexogen2'] → 'lexogen'.
 _TECH_ALIASES = [
     ['10x1', '10x2', '10x3'],
     ['generic-scrnaseq1', 'generic-scrnaseq2', 'generic-scrnaseq3'],
-    ['smartseq1', 'smartseq2', 'smartseq3'],
-    ['lexogen1', 'lexogen2'],
-    ['trueseq1', 'trueseq2'],
+    ['smartseq1', 'smartseq2', 'smartseq3', 'smartseq4', 'smartseq5'],
 ]
 _ALIAS_SOURCES = {col for group in _TECH_ALIASES for col in group}
 _ALIAS_TARGETS  = [group[0].rstrip('0123456789') for group in _TECH_ALIASES]
 
+KIT_PATTERNS = [
+    pattern('kit_trueseq1',  r'\btrue?.?seq\b',                                    0),
+    pattern('kit_trueseq2',  r'illumina.{0,30}(strand|total.rna|mrna.kit)',         1),
+    pattern('kit_nebnext',   r'neb.?next',                                          0),
+    pattern('kit_nextera',   r'\bnextera\b',                                        0),
+    pattern('kit_lexogen1',  r'lexogen',                                             0),
+    pattern('kit_lexogen2',  r'\bquant.?seq\b',                                     0),
+    pattern('kit_ribozero',  r'ribo.?zero',                                         0),
+    pattern('kit_smarter',   r'\bSMARTer\b',                                        0),
+]
 
-def _canonical_cols() -> tuple[list[str], list[str]]:
-    """Return (tech_cols, new_cols) after alias collapsing — computed dynamically."""
+_KIT_ALIASES = [
+    ['kit_trueseq1', 'kit_trueseq2'],   # → kit_trueseq
+    ['kit_lexogen1', 'kit_lexogen2'],   # → kit_lexogen
+]
+_KIT_ALIAS_SOURCES = {col for group in _KIT_ALIASES for col in group}
+_KIT_ALIAS_TARGETS  = [group[0].rstrip('0123456789') for group in _KIT_ALIASES]
+
+ALL_PATTERNS = TECH_PATTERNS + KIT_PATTERNS + BIAS_PATTERNS + SELECTION_HINT_PATTERNS
+
+
+def _canonical_cols() -> tuple[list[str], list[str], list[str]]:
+    """Return (tech_cols, kit_cols, new_cols) after alias collapsing."""
     tech_cols = (
         [p.name for p in TECH_PATTERNS if p.name not in _ALIAS_SOURCES]
         + _ALIAS_TARGETS
     )
+    kit_cols = (
+        [p.name for p in KIT_PATTERNS if p.name not in _KIT_ALIAS_SOURCES]
+        + _KIT_ALIAS_TARGETS
+    )
     new_cols = [p.name for p in BIAS_PATTERNS + SELECTION_HINT_PATTERNS]
-    return tech_cols, new_cols
+    return tech_cols, kit_cols, new_cols
 
 
 # ---------------------------------------------------------------------------
@@ -331,12 +378,18 @@ def _annotate_file(filepath: str, keep_cols: list[str]) -> pl.DataFrame:
             pl.sum_horizontal([pl.col(c) for c in group]).alias(alias)
         ).drop(group)
 
+    for group in _KIT_ALIASES:
+        alias = group[0][:-1]
+        df = df.with_columns(
+            pl.sum_horizontal([pl.col(c) for c in group]).alias(alias)
+        ).drop(group)
+
     df.write_csv(f'{filepath}-annotated.tsv')
     print(f'[annotated] {filepath}-annotated.tsv', file=sys.stderr)
 
-    tech_cols, new_cols = _canonical_cols()
+    tech_cols, kit_cols, new_cols = _canonical_cols()
     valid_keep = [c for c in keep_cols if c in df.columns]
-    return df.select(valid_keep + tech_cols + new_cols)
+    return df.select(valid_keep + tech_cols + kit_cols + new_cols)
 
 
 # ---------------------------------------------------------------------------
@@ -441,6 +494,18 @@ def _resolve_technology(df: pl.DataFrame, tech_cols: list[str]) -> pl.DataFrame:
         .alias('generic-scrnaseq-only')
     )
 
+    # SC priority: any named single-cell technology scoring ≥10 (experiment-level or
+    # stronger) suppresses the bulk score before argmax.  Bulk signal is structurally
+    # weak — it fires on study abstracts and extraction kit names that appear throughout
+    # SC protocols.  A specific SC technology match at experiment level is a qualitatively
+    # stronger signal and should win.
+    _specific_sc = [c for c in no_generic if c in SC_TECH_NAMES]
+    if _specific_sc and 'bulk' in df.columns:
+        sc_signal = pl.sum_horizontal([pl.col(c).fill_null(0) for c in _specific_sc])
+        df = df.with_columns(
+            bulk=pl.when(sc_signal.ge(10)).then(pl.lit(0)).otherwise(pl.col('bulk'))
+        )
+
     df = df.with_columns(
         technology=pl.coalesce(
             pl.when(pl.max_horizontal([pl.col(c) for c in with_generic_only]) == 0)
@@ -449,6 +514,16 @@ def _resolve_technology(df: pl.DataFrame, tech_cols: list[str]) -> pl.DataFrame:
             .then(pl.lit(tech))
             for tech in with_generic_only
         )
+    )
+
+    # Demote sortseq → celseq (sort_seq is a variant of CEL-seq2, not a peer technology)
+    df = df.with_columns(
+        tech_variant=pl.when(pl.col('technology') == 'sortseq')
+                     .then(pl.lit('sort_seq'))
+                     .otherwise(pl.lit(None)),
+        technology=pl.when(pl.col('technology') == 'sortseq')
+                   .then(pl.lit('celseq'))
+                   .otherwise(pl.col('technology'))
     )
     return df
 
@@ -502,6 +577,33 @@ def _resolve_selection(df: pl.DataFrame) -> pl.DataFrame:
     return df
 
 
+def _resolve_prep_kit(df: pl.DataFrame, kit_cols: list[str]) -> pl.DataFrame:
+    """Arg-max across kit columns → prep_kit label (strip 'kit_' prefix for display)."""
+    kit_display = {c: c.removeprefix('kit_') for c in kit_cols}
+    no_signal = pl.max_horizontal([pl.col(c) for c in kit_cols]) == 0
+    return df.with_columns(
+        prep_kit=pl.coalesce(
+            pl.when(no_signal).then(pl.lit('unknown')),
+            *(
+                pl.when(pl.col(c) == pl.max_horizontal([pl.col(c) for c in kit_cols]))
+                .then(pl.lit(kit_display[c]))
+                for c in kit_cols
+            )
+        )
+    )
+
+
+def _resolve_tech_class(df: pl.DataFrame) -> pl.DataFrame:
+    """Derive tech_class from resolved technology via TECH_CLASS_MAP."""
+    tc_frame = pl.DataFrame({
+        'technology': list(TECH_CLASS_MAP),
+        '_tc':        list(TECH_CLASS_MAP.values()),
+    })
+    return df.join(tc_frame, on='technology', how='left').with_columns(
+        pl.col('_tc').fill_null('unknown').alias('tech_class')
+    ).drop('_tc')
+
+
 # ---------------------------------------------------------------------------
 # Conflict detection
 # ---------------------------------------------------------------------------
@@ -539,7 +641,7 @@ def _flag_conflicts(df: pl.DataFrame) -> pl.DataFrame:
         ('sc_source|no_sc_tech',
          (pl.col('sc_or_bulk_src') == 'sc') & ~is_sc_tech & tech_known),
 
-        ('bulk_kit|sc_source',
+        ('bulk_tech|sc_source',
          is_bulk_tech & (pl.col('sc_or_bulk_src') == 'sc')),
 
         # read bias vs technology implication
@@ -640,12 +742,19 @@ _SAMPLE_COLS = [
     _col('sample.alias',                'alias'),
     _col('sample.description',          'description'),
     _col('sample.attributes',           'attributes'),
-    _col('GEOsample.dataprocessing',    'geo_dataprocessing'),
     _col('GEOsample.source',            'geo_source'),
     _col('GEOsample.treatmentprotocol', 'geo_treatmentprotocol'),
     _col('GEOsample.extractprotocol',   'geo_extractprotocol'),
     _col('GEOsample.growthprotocol',    'geo_growthprotocol'),
     _col('GEOsample.characteristics',   'geo_characteristics'),
+]
+
+# dataprocessing-level: bioinformatics pipeline descriptions; downweighted (×10 vs sample ×100)
+# Separated from _SAMPLE_COLS to avoid pipeline tool mentions (e.g. "Drop-seq Tools") scoring
+# equally to library prep mentions in extractprotocol.
+_DATAPROC_COLS = [
+    _col('sample.accession',         'accession'),
+    _col('GEOsample.dataprocessing', 'geo_dataprocessing'),
 ]
 
 # study-level: deduplicate by study.accession
@@ -658,19 +767,20 @@ _STUDY_COLS = [
 ]
 
 
-def build_ugreppable_files(combined_tsv: str) -> tuple[str, str, str, str]:
+def build_ugreppable_files(combined_tsv: str) -> tuple[str, str, str, str, str]:
     """
-    Extract 4 compact per-level TSVs from a single combined metadata TSV
+    Extract 5 compact per-level TSVs from a single combined metadata TSV
     (e.g. all_zf_datescurated_withGEO.tsv).
 
-    Returns (run_tsv, sample_tsv, exp_tsv, study_tsv) paths for the 4 written files.
+    Returns (run_tsv, sample_tsv, exp_tsv, study_tsv, dataproc_tsv) paths.
     Files are written next to the combined TSV.
     """
     base = Path(combined_tsv).with_suffix('')
-    out_run    = str(base) + '_run_ugreppable.tsv'
-    out_exp    = str(base) + '_exp_ugreppable.tsv'
-    out_sample = str(base) + '_sample_ugreppable.tsv'
-    out_study  = str(base) + '_study_ugreppable.tsv'
+    out_run      = str(base) + '_run_ugreppable.tsv'
+    out_exp      = str(base) + '_exp_ugreppable.tsv'
+    out_sample   = str(base) + '_sample_ugreppable.tsv'
+    out_study    = str(base) + '_study_ugreppable.tsv'
+    out_dataproc = str(base) + '_dataproc_ugreppable.tsv'
 
     df = pl.read_csv(combined_tsv, separator='\t', infer_schema_length=0)
 
@@ -685,21 +795,23 @@ def build_ugreppable_files(combined_tsv: str) -> tuple[str, str, str, str]:
         sub.write_csv(out_path, separator='\t')
         print(f'[build_ugreppable] wrote {out_path} ({len(sub)} rows)', file=sys.stderr)
 
-    _extract(_RUN_COLS,    'accession', out_run)
-    _extract(_EXP_COLS,    'accession', out_exp)
-    _extract(_SAMPLE_COLS, 'accession', out_sample)
-    _extract(_STUDY_COLS,  'accession', out_study)
+    _extract(_RUN_COLS,      'accession', out_run)
+    _extract(_EXP_COLS,      'accession', out_exp)
+    _extract(_SAMPLE_COLS,   'accession', out_sample)
+    _extract(_STUDY_COLS,    'accession', out_study)
+    _extract(_DATAPROC_COLS, 'accession', out_dataproc)
 
-    return out_run, out_sample, out_exp, out_study
+    return out_run, out_sample, out_exp, out_study, out_dataproc
 
 
 # ---------------------------------------------------------------------------
 # Combine mode
 # ---------------------------------------------------------------------------
 
-def combine(run_file: str, sample_file: str, exp_file: str, study_file: str) -> None:
-    tech_cols, new_cols = _canonical_cols()
-    all_scored = tech_cols + new_cols
+def combine(run_file: str, sample_file: str, exp_file: str, study_file: str,
+            dataproc_file: str | None = None) -> None:
+    tech_cols, kit_cols, new_cols = _canonical_cols()
+    all_scored = tech_cols + kit_cols + new_cols
 
     # 1. Full joined metadata (raw, for downstream use)
     run_raw    = pl.read_csv(run_file,    separator='\t', infer_schema_length=0).unique(subset=['accession'])
@@ -734,12 +846,18 @@ def combine(run_file: str, sample_file: str, exp_file: str, study_file: str) -> 
     sample_ann = _annotate_file(sample_file, keep_cols=['accession'])
     exp_ann    = _annotate_file(exp_file,    keep_cols=exp_keep)
     study_ann  = _annotate_file(study_file,  keep_cols=['accession'])
+    if dataproc_file is not None:
+        dataproc_ann = _annotate_file(dataproc_file, keep_cols=['accession'])
+    else:
+        dataproc_ann = None
 
     # 3. Rename scored columns with source suffix
     run_ann    = run_ann.rename(   {c: f'{c}_run'        for c in all_scored})
     sample_ann = sample_ann.rename({c: f'{c}_sample'     for c in all_scored})
     exp_ann    = exp_ann.rename(   {c: f'{c}_experiment' for c in all_scored})
     study_ann  = study_ann.rename( {c: f'{c}_study'      for c in all_scored})
+    if dataproc_ann is not None:
+        dataproc_ann = dataproc_ann.rename({c: f'{c}_dataproc' for c in all_scored})
 
     # 4. Join annotated sources
     df = (
@@ -748,22 +866,34 @@ def combine(run_file: str, sample_file: str, exp_file: str, study_file: str) -> 
         .join(sample_ann, left_on='pool_member', right_on='accession', how='left', suffix='_s')
         .join(study_ann,  left_on='study',       right_on='accession', how='left', suffix='_st')
     )
+    if dataproc_ann is not None:
+        df = df.join(dataproc_ann, left_on='pool_member', right_on='accession', how='left', suffix='_dp')
 
     # 5. Apply source weighting to produce combined scored columns
-    # run/sample/experiment/study suffixes were applied to scored cols only before
+    # run/sample/experiment/study/dataproc suffixes were applied to scored cols only before
     # the join, so no other columns can have those suffixes → safe to drop blindly.
+    active_srcs = ['run', 'sample', 'experiment', 'study']
+    if dataproc_ann is not None:
+        active_srcs.append('dataproc')
     source_cols_to_drop = [
         f'{col}_{src}'
         for col in all_scored
-        for src in ('run', 'sample', 'experiment', 'study')
+        for src in active_srcs
         if f'{col}_{src}' in df.columns
     ]
+
+    def _dataproc_term(col: str) -> pl.Expr:
+        if dataproc_ann is not None and f'{col}_dataproc' in df.columns:
+            return pl.col(f'{col}_dataproc').fill_null(0) * 10
+        return pl.lit(0)
+
     df = df.with_columns(**{
         col: (
             pl.col(f'{col}_run').fill_null(0)        * 1000 +
             pl.col(f'{col}_sample').fill_null(0)     * 100  +
             pl.col(f'{col}_experiment').fill_null(0) * 10   +
-            pl.col(f'{col}_study').fill_null(0)      * 1
+            pl.col(f'{col}_study').fill_null(0)      * 1    +
+            _dataproc_term(col)
         )
         for col in all_scored
     }).drop(source_cols_to_drop)
@@ -776,6 +906,8 @@ def combine(run_file: str, sample_file: str, exp_file: str, study_file: str) -> 
     df = _resolve_sc_or_bulk(df, tech_cols)
     df = _resolve_read_bias(df)
     df = _resolve_selection(df)
+    df = _resolve_prep_kit(df, kit_cols)
+    df = _resolve_tech_class(df)
 
     # 8. Flag cross-signal disagreements for downstream QC
     df = _flag_conflicts(df)
@@ -799,20 +931,22 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if sys.argv[1] == 'combine':
-        if len(sys.argv) != 6:
-            print('combine requires exactly 4 input files', file=sys.stderr)
+        if len(sys.argv) not in (6, 7):
+            print('combine requires 4 or 5 input files: <run> <sample> <exp> <study> [<dataproc>]',
+                  file=sys.stderr)
             sys.exit(1)
-        combine(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+        dataproc_f = sys.argv[6] if len(sys.argv) == 7 else None
+        combine(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], dataproc_f)
 
     elif sys.argv[1] == 'fromcombined':
         if len(sys.argv) != 3:
             print('fromcombined requires exactly 1 input file', file=sys.stderr)
             sys.exit(1)
-        run_f, sample_f, exp_f, study_f = build_ugreppable_files(sys.argv[2])
-        combine(run_f, sample_f, exp_f, study_f)
+        run_f, sample_f, exp_f, study_f, dataproc_f = build_ugreppable_files(sys.argv[2])
+        combine(run_f, sample_f, exp_f, study_f, dataproc_f)
 
     elif sys.argv[1] == 'buildonly':
-        # Build the 4 ugreppable files without running annotation (useful for inspection)
+        # Build the 5 ugreppable files without running annotation (useful for inspection)
         if len(sys.argv) != 3:
             print('buildonly requires exactly 1 input file', file=sys.stderr)
             sys.exit(1)

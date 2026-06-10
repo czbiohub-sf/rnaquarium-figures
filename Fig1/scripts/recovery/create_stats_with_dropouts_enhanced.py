@@ -205,25 +205,8 @@ def parse_download_stats(download_dir):
                 if len(data["readfiles"]) > 1:
                     result["r2_median_len"] = data["readfiles"][1].get("readlen")
 
-                # Fastp stats
-                if "mapping" in readfile and "fastp" in readfile["mapping"]:
-                    fastp = readfile["mapping"]["fastp"]
-
-                    if "summary" in fastp:
-                        before = fastp["summary"].get("before_filtering", {})
-                        after = fastp["summary"].get("after_filtering", {})
-                        result["fastp_reads_before"] = before.get("total_reads")
-                        result["fastp_reads_after"] = after.get("total_reads")
-
-                    if "filtering_result" in fastp:
-                        filt = fastp["filtering_result"]
-                        result["fastp_reads_too_short"] = filt.get("too_short_reads")
         except Exception as e:
             print(f"  Warning: Failed to parse {seqdet_file}: {e}")
-
-    # Default fastp_reads_before to starting_reads if not found
-    if result["starting_reads"] and not result["fastp_reads_before"]:
-        result["fastp_reads_before"] = result["starting_reads"]
 
     return result
 
@@ -267,6 +250,16 @@ def parse_dropout_run(run_id, work_dirs):
         download_dir = Path(work_dirs["download"])
         download_stats = parse_download_stats(download_dir)
         stats.update(download_stats)
+
+    # Parse fastp work directory
+    if "fastp" in work_dirs:
+        fastp_dir = Path(work_dirs["fastp"])
+        fastp_stats = parse_fastp_stats(fastp_dir / "stats.txt")
+        if fastp_stats:
+            stats["fastp_reads_before"] = fastp_stats.get("reads_before")
+            stats["fastp_reads_after"] = fastp_stats.get("reads_after")
+            stats["fastp_reads_too_short"] = fastp_stats.get("reads_too_short")
+            stats["fastp_reads_trimmed"] = fastp_stats.get("reads_trimmed")
 
     # Parse kallisto (kb_negative)
     if "kb_negative" in work_dirs:

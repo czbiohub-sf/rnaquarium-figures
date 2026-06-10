@@ -9,6 +9,7 @@ replaced Panel C with the pipeline-outcome tables.
 Run from the Fig1/ root.
 """
 
+import argparse
 import textwrap
 import polars as pl
 import matplotlib as mpl
@@ -22,7 +23,15 @@ from pathlib import Path
 # Configuration
 # =============================================================================
 
-METADATA_FILE = Path("/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv")
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--metadata-file", type=Path,
+    default=Path("data/metadata/all_zf_dates_devstage_tissue_tech_curated.tsv"),
+    help="Curated SRA/GEO metadata TSV (devstage, tissue, tech).",
+)
+_args, _ = _parser.parse_known_args()
+
+METADATA_FILE = _args.metadata_file
 BATLOW_PALETTE = Path("palette/batlow/DiscretePalettes/batlow100.txt")
 OUTPUT_DIR = Path("figures/supplemental")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

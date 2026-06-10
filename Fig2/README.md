@@ -28,7 +28,6 @@ Rendered SVGs from these scripts currently live at
   treemap, heat tree).
 - Move UMAP scripts' data/output paths so they resolve relative to `Fig2/`
   rather than `Fig1/`.
-- Draft `design.md` for Figure 2.
 
 ## Earlier scope (now superseded)
 

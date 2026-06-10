@@ -12,10 +12,10 @@ Legends (with proportional stacked bars) are drawn as separate figures.
 
 Data source: pre-processed anndata with log2 TMM-CPM normalization.
 Pre-computed PCA/UMAP embeddings are used if present; otherwise computed
-following the reference notebook at:
-  /hpc/projects/data.science/duo.peng/RQ_umaps/step2.umap.expression.ipynb
+following the reference UMAP-embedding notebook (internal).
 """
 
+import argparse
 import numpy as np
 import scipy.sparse
 import polars as pl
@@ -32,8 +32,21 @@ from pathlib import Path
 # Configuration
 # =============================================================================
 
-ANNDATA_H5AD = Path("data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad")
-METADATA_FILE = Path("/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv")
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--anndata-h5ad", type=Path,
+    default=Path("data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad"),
+    help="Transcriptome anndata (.h5ad) with pre-computed PCA/UMAP embeddings.",
+)
+_parser.add_argument(
+    "--metadata-file", type=Path,
+    default=Path("data/metadata/all_zf_dates_devstage_tissue_tech_curated.tsv"),
+    help="Curated SRA/GEO metadata TSV (devstage, tissue, tech).",
+)
+_args, _ = _parser.parse_known_args()
+
+ANNDATA_H5AD = _args.anndata_h5ad
+METADATA_FILE = _args.metadata_file
 BATLOW_PALETTE = Path("palette/batlow/DiscretePalettes/batlow100.txt")
 OUTPUT_DIR = Path("figures")
 OUTPUT_DIR.mkdir(exist_ok=True)

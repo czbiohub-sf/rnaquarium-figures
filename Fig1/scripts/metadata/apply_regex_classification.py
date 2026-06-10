@@ -254,7 +254,7 @@ def apply_to_dataframe(df: pd.DataFrame, protocol_col: str = 'experiment.library
 if __name__ == '__main__':
     import sys
 
-    protocol_file = '/hpc/scratch/group.data.science/y_temp/rnaquarium-figures/Fig1/unique_values/experiment.library_construction_protocol.txt'
-    spot_descriptor_file = '/hpc/scratch/group.data.science/y_temp/rnaquarium-figures/Fig1/unique_values/experiment.spot_descriptor.txt'
+    protocol_file = 'unique_values/experiment.library_construction_protocol.txt'
+    spot_descriptor_file = 'unique_values/experiment.spot_descriptor.txt'
 
     example_usage(protocol_file, spot_descriptor_file)

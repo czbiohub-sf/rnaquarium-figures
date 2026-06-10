@@ -1,9 +1,6 @@
 # Figure 1 — RNAquarium pipeline
 
-Pipeline-overview figure for the 75k zebrafish-SRA processing paper. Current
-layout is in `Figure1draft-2026-04.png`; panel geometry and intent are
-described in `design.md`. An earlier layout (through 2026-03) lives at
-`design.old.md`.
+Pipeline-overview figure for the 75k zebrafish-SRA processing paper.
 
 Panels:
 
@@ -44,7 +41,6 @@ Fig1/
 │   └── old/                            # abandoned/superseded outputs
 ├── data/                               # local copies + symlinks (gitignored)
 ├── palette/batlow*                     # Crameri batlow palette data
-├── design.md / design.old.md / narrative.md / abstract.md
 └── RNAquarium-Pipeline-Counts.svg      # earlier diagram source
 ```
 
@@ -66,13 +62,10 @@ Authoritative (post-recovery) files:
 | Seq-Detective judgements | `data/75k_unstable/seq-detective-judgement-summary-augmented.txt` |
 | Seq-Detective per-mate metrics | `data/75k_unstable/seqdetective_metrics.parquet` |
 | Transcriptome anndata | `data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad` |
-| Curated metadata (devstage, tissue, tech) | `/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv` |
+| Curated metadata (devstage, tissue, tech) | `data/metadata/all_zf_dates_devstage_tissue_tech_curated.tsv` |
 | SRA accession list | `data/75k_unstable/ZF_SraEsearch-2025-06-22.csv` |
 | Manual tech annotations | `data/zf-core-v2-74K_problematic_with_bulk.kmers.allcols.csv` |
 | Nextflow process trace | `data/75k_unstable/trace-merged-dangerously.txt` |
-
-Column schemas, dropout counts, and discrepancy notes live in
-`.claude/data_sources.md`.
 
 ## Regenerate panels
 
@@ -109,6 +102,6 @@ file-copy step touches NFS and takes hours.
 - SVG plots with `svg.fonttype = 'none'` so text stays selectable.
 - Pie charts drawn as polar bar plots to allow a second outer ring.
 - Colors from Crameri batlow (`palette/`); seq-detective outcome hexes are
-  locked in `design.md` so pie and scatter stay consistent.
+  locked so pie and scatter stay consistent.
 - Main-figure outputs: `Fig1_<panel>_<n>_<description>.svg`. Supplemental
   outputs drop the panel letter.

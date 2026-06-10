@@ -18,7 +18,7 @@ from scipy.stats import wasserstein_distance
 
 # Data paths
 SEQDETECTIVE_METRICS = Path("data/75k_unstable/seqdetective_metrics.parquet")
-ROSETTA_PATH = Path("/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/zf_rosetta.tsv")
+ROSETTA_PATH = Path("data/metadata/zf_rosetta.tsv")
 OUTPUT_DIR = Path("figures")
 
 

@@ -4,6 +4,7 @@ Copy recovered download stats files to versioned output directory.
 Checks for existing files and only copies missing ones to avoid clobbering.
 """
 
+import argparse
 import polars as pl
 from pathlib import Path
 import shutil
@@ -12,8 +13,17 @@ from datetime import datetime
 
 # Paths
 RECOVERABLE_CSV = Path("data/75k_unstable/recoverable_files.csv")
-DEST_BASE = Path("/hpc/projects/balla_group/sra_experiments/versioned_zf_output/75k_unstable/host_mapping/download")
 LOG_FILE = Path("data/75k_unstable/download_copy.log")
+
+_parser = argparse.ArgumentParser(description=__doc__)
+_parser.add_argument(
+    "--dest-base", type=Path,
+    default=Path("data/75k_unstable/host_mapping/download"),
+    help="Pipeline output download/ tree to copy recovered per-run stats into.",
+)
+_args, _ = _parser.parse_known_args()
+
+DEST_BASE = _args.dest_base
 
 # Files to copy from download work directories
 DOWNLOAD_FILES = [

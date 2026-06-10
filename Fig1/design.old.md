@@ -253,7 +253,7 @@ new script path: `Fig1_C_2_metadata_summary.py`
  - (n=count) shown only for categories >= 10%
  - full legend with n= counts alongside each plot
 
-**Data source**: `/hpc/projects/balla_group/sra_experiments/SRA_metadata/dec2025_75k_submitteradded/all_zf_dates_devstage_tissue_tech_curated.tsv`
+**Data source**: `data/metadata/all_zf_dates_devstage_tissue_tech_curated.tsv`
 - Uses `devstage_curation_coarse` column (6 categories: Embryo, Larval, Adult, Undetermined, Juvenile, Multi-stage)
 - Uses `tissue_curation_coarse` column (21 categories: All anatomical structures, Nervous System, etc.)
 
@@ -270,10 +270,10 @@ new script path: `Fig1_C_2_metadata_summary.py`
 status: REFINING
 new script path: `Fig1_D_1_umap.py`
 
-reference umap notebook: `/hpc/projects/data.science/duo.peng/RQ_umaps/step2.umap.expression.ipynb`
+reference umap notebook: internal UMAP-embedding notebook
 
 **Data source**: `data/75k_unstable/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad`
-  (symlink → `/hpc/projects/balla_group/sra_experiments/versioned_zf_output/75k_unstable/adata_obj/75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad`)
+  (symlink → versioned pipeline output `75k_unstable_anndata_zfin_aliases_metadata.log2tmmcpm.h5ad`)
 - 61,615 samples × 22,252 genes (log2 TMM-CPM normalized)
 - Pre-computed `X_pca` and `X_umap` in `obsm` — used directly, no recomputation needed
 - If UMAP absent: recomputes following reference notebook (top-2000 HVG, scale, 50 PCA, 100-neighbor graph, min_dist=0.5)
