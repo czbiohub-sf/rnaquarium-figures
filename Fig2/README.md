@@ -2,7 +2,7 @@
 
 Panels A–D are produced by the Jupyter notebook in this directory
 (`Fig2ABCD_umap_and_marker_genes.ipynb`). Panels E–G (non-host / microbial
-diversity) are generated directly by the RNAquarium pipeline run.
+diversity) are generated directly by the RNAquarium pipeline run, except for 2 heat trees generated via `Fig2_FG_heattrees.ibynb`.
 
 ## Overview
 
