@@ -10,39 +10,7 @@ This repo contains the code and data used to generate the figures for the RNAqua
  - Figure 6: RNAquarium web portal (screenshots of portal, no code)
 
 ## Usage
-```sh
-git clone https://github.com/czbiohub-sf/rnaquarium-figures
-cd rnaquarium-figures
-```
-
-<TODO>
-
-
-## What's in this repo
-
-[comment]: # {REPO_TREE}
-```
-.
-├── Fig1
-│   ├── environment.yml
-│   ├── notebooks
-│   └── README.md
-├── Fig2
-│   └── README.md
-├── Fig3
-│   └── README.md
-├── Fig4
-│   └── README.md
-├── Fig5
-│   └── README.md
-├── LICENSE
-├── Makefile
-├── README.md
-└── reports
-    └── figures
-```
-
-[comment]: run `make readme` to re-generate the above tree
+Please see individual README.md in figure directories for details on creating each figure.
 
 # License
 This project is licensed under the BSD 3-Clause license - see the LICENSE file
