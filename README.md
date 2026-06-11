@@ -12,6 +12,6 @@ This repo contains the code and data used to generate the figures for the RNAqua
 ## Usage
 Please see individual README.md in figure directories for details on creating each figure.
 
-# License
+## License
 This project is licensed under the BSD 3-Clause license - see the LICENSE file
 for details.
