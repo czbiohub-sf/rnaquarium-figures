@@ -29,7 +29,9 @@ class pattern:
         idxs = collections.Counter(int(line)-2 for line in output.stdout.split())
         return idxs
 
-def metadata_annotate_tech(df, keep_cols=[]):
+def metadata_annotate_tech(file, keep_cols=[]):
+    df = pl.read_csv(file, separator='\t', row_index_name='idx')
+
     # NAME, PATTERN, MAXERRORS
     patterns = [
         pattern('bulk', '(the |nano(particles)?[^a-z]* ?)?bulk', 0),
@@ -103,26 +105,35 @@ if __name__ == "__main__":
     
     if sys.argv[1] == "combine":
         # one mega metadata file:
-        run = pl.read_csv(sys.argv[2], separator='\t', row_index_name='idx')
-        samn = pl.read_csv(sys.argv[3], separator='\t', row_index_name='idx')
-        exp = pl.read_csv(sys.argv[4], separator='\t', row_index_name='idx')
-        study = pl.read_csv(sys.argv[5], separator='\t', row_index_name='idx')
+        run = pl.read_csv(sys.argv[2], separator='\t').unique(subset=['accession'])
+        samn = pl.read_csv(sys.argv[3], separator='\t').unique(subset=['accession'])
+        exp = pl.read_csv(sys.argv[4], separator='\t').unique(subset=['accession'])
+        study = pl.read_csv(sys.argv[5], separator='\t').unique(subset=['accession'])
         #keep_library_source = ['TRANSCRIPTOMIC', 'METATRANSCRIPTOMIC', 'TRANSCRIPTOMIC_SINGLE_CELL']
-        run.join(exp, left_on='experiment', right_on='accession', how='left', suffix='_experiment')
-        .join(samn, left_on='pool_member', right_on='accession', how='left', suffix='_sample')
-        .join(study, left_on='study', right_on='accession', how='left', suffix='_study')
-        .write_csv("full_metadata_combined.csv")
+        df = run.join(
+        	exp, left_on='experiment', right_on='accession', how='left', suffix='_experiment'
+        ).join(
+        	samn, left_on='pool_member', right_on='accession', how='left', suffix='_sample'
+        ).join(
+        	study, left_on='study', right_on='accession', how='left', suffix='_study'
+        )
+        df.write_csv("full_metadata_combined.csv")
+        del df
+        del run
+        del samn
+        del exp
+        del study
         print("full_metadata_combined.csv")
 
         # for tech annotation we strip most of the columns.
-        run, tech_cols = metadata_annotate(run, keep_cols=['accession', 'experiment', 'pool_member', 'published_date', 'total_spots', 'read:length', 'semantic_name'])
+        run, tech_cols = metadata_annotate_tech(sys.argv[2], keep_cols=['accession', 'experiment', 'pool_member', 'published_date', 'total_spots', 'read:length', 'semantic_name'])
         #add "run" suffix to tech columns
         run = run.rename({col: f"{col}_run" for col in tech_cols})
-        samn, __ = metadata_annotate_tech(samn, keep_cols=['accession'])
+        samn, __ = metadata_annotate_tech(sys.argv[3], keep_cols=['accession'])
         samn = samn.rename({col: f"{col}_sample" for col in tech_cols})
-        exp, __ = metadata_annotate_tech(exp, keep_cols=['accession', 'study', 'library_source', 'platform', 'instrument_model'])
+        exp, __ = metadata_annotate_tech(sys.argv[4], keep_cols=['accession', 'study', 'library_source', 'platform', 'instrument_model'])
         exp = exp.rename({col: f"{col}_experiment" for col in tech_cols})
-        study, __ = metadata_annotate_tech(study, keep_cols=['accession'])
+        study, __ = metadata_annotate_tech(sys.argv[5], keep_cols=['accession'])
         study = study.rename({col: f"{col}_study" for col in tech_cols})
         
         # combine the dataframes

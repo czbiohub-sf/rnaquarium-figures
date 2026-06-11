@@ -1,0 +1,24 @@
+# Python 3.10 (developed and tested with CPython 3.10.16)
+#
+# Core scientific stack used by the analysis notebook and the two utils modules.
+# Versions are pinned to those used to produce the published figures; nearby
+# versions are very likely to work as well.
+numpy==2.2.6
+pandas==2.3.1
+scipy==1.15.3
+matplotlib==3.10.3
+seaborn==0.13.2
+
+# Only needed on the "full recompute" path, to read the TMM-normalized count
+# matrix (counts_tmm-norm.parquet). Not required for the default load-from-file
+# path that regenerates the figures from data/output/.
+pyarrow==21.0.0
+
+# To open and run the notebook (any Jupyter front-end works).
+ipykernel==6.30.1
+jupyterlab        # or:  notebook
+
+# Optional. Only used if you set method="medcouple" in
+# utils_analyze_effect_size.thresholds_for_column(). The notebook uses
+# method="tukey", so this is NOT needed to reproduce the figures.
+# medcouple

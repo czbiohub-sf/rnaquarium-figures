@@ -1,10 +1,3 @@
-# Figure 5 - Interpretable, shallow AI models built with RNAquarium
+# Figure 5 - Linking host transcriptomes to infection biology
 
-
-## Inputs
-
-
-## Outputs
-
-
-## Usage
+Please see README.md in figure panel subdirectories for more details.
