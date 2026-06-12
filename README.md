@@ -12,6 +12,14 @@ This repo contains the code and data used to generate the figures for the RNAqua
 ## Usage
 Please see individual README.md in figure directories for details on creating each figure.
 
+## Authors and maintainers
+
+RNAquarium is developed and maintained by the [Computational Biology Platform](https://biohub.org/comp-biology/) & [Balla Group](https://biohub.org/balla/) at the [Biohub](https://biohub.org).
+
+* **Research Lead Team:** Keir Balla, Duo Peng, Yasin Şenbabaoğlu
+* **Bioinformatics Team:** Yttria Aniseia, Eric Waltari, Max Frank, Gibraan Rahman, Andy Zhou, Yang-Joon Kim, Hejin Huang
+* **Web Development Team:** Leandro Lima, Wellington Rutes
+
 ## License
 This project is licensed under the BSD 3-Clause license - see the LICENSE file
 for details.
