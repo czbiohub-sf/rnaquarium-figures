@@ -12,8 +12,6 @@ seaborn==0.13.2
 # Only needed on the "full recompute" path, to read the TMM-normalized count
 # matrix (counts_tmm-norm.parquet). Not required for the default load-from-file
 # path that regenerates the figures from data/output/.
-# Bumped 21.0.0 -> 23.0.1 to resolve a Dependabot alert (Apache Arrow C++
-# use-after-free when reading IPC files with pre-buffering, GHSA / CVE-2026).
 pyarrow==23.0.1
 
 # To open and run the notebook (any Jupyter front-end works).
